@@ -1,0 +1,11 @@
+*.user
+src/.vs/
+src/IR.Convert/bin/
+src/IR.Convert/obj/
+src/IR.Core/bin/
+src/IR.Core/obj/
+src/IR.Tests/bin/
+src/IR.Tests/obj/
+src/IR.Website/bin/
+src/IR.Website/obj/
+src/packages/
