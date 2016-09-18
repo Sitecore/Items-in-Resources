@@ -9,3 +9,7 @@ src/IR.Tests/obj/
 src/IR.Website/bin/
 src/IR.Website/obj/
 src/packages/
+poc/**/bin
+poc/**/obj
+poc/**/.vs
+

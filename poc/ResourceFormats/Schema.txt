@@ -1,0 +1,24 @@
+itemid -> item metadata -> childlist
+
+[0] header
+-> metadata pool (m)
+-> child pool (i)
+-> data pool (f)
+
+[n] item index
+guid | guid -> (l,c) | guid -> (j, a) | guid -> (k, d) | guid | guid
+
+
+[m] metadata pool
+[j] item metadata | [k] item metadata | [l] item metadata
+
+
+
+[i] child pool
+[g] item list | [h] item list
+
+[f] item data pool
+[a] item | [b] item | [c] item | [d] item | [e] item
+
+get item information (guid) = bin search (n) -> m + j
+get item children
