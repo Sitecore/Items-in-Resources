@@ -107,12 +107,7 @@
 
       foreach (var pair in item.Fields.Unversioned)
       {
-        var languageName = pair.Key;
-        if (languageName != "en")
-        {
-          continue;
-        }
-
+        var languageName = pair.Key;    
         FieldsData languageFields;
         if (!languages.TryGetValue(languageName, out languageFields))
         {
@@ -128,17 +123,12 @@
 
       foreach (var pair in item.Fields.Versioned)
       {
-        var languageName = pair.Key;
-        if (languageName != "en")
-        {
-          continue;
-        }
-
+        var languageName = pair.Key;    
         FieldsData languageFields;
-        if (!languages.TryGetValue(pair.Key, out languageFields))
+        if (!languages.TryGetValue(languageName, out languageFields))
         {
           languageFields = new FieldsData();
-          languages.Add(pair.Key, languageFields);
+          languages.Add(languageName, languageFields);
         }
 
         if (!pair.Value.Any())

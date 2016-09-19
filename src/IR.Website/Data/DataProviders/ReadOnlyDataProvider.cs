@@ -1,9 +1,11 @@
 ﻿namespace IR.Data.DataProviders
 {
   using System;
+  using System.Collections;
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
+  using System.Text.RegularExpressions;
   using IR.Data.DataAccess;
   using IR.Data.DataFormat;
   using Sitecore;
@@ -12,6 +14,7 @@
   using Sitecore.Data.DataProviders;
   using Sitecore.Data.Templates;
   using Sitecore.Diagnostics;
+  using Sitecore.Exceptions;
   using Sitecore.Globalization;
 
   public class ReadOnlyDataProvider : DataProvider
@@ -112,17 +115,13 @@
         return list;
       }
 
-      Dictionary<Guid, string> sharedFields;
-      if (this.DataSet.SharedData.TryGetValue(itemDefinition.ID.Guid, out sharedFields))
-      {
-        foreach (var sharedField in sharedFields)
-        {
-          list.Add(ID.Parse(sharedField.Key), sharedField.Value ?? string.Empty);
-        }
-      }
+      this.DataSet.SharedData.TryGetValue(itemDefinition.ID.Guid)?
+        .ToList()
+        .ForEach(sharedField => 
+          list.Add(ID.Parse(sharedField.Key), sharedField.Value ?? string.Empty));
 
-      ItemLanguagesData languages;
-      if (this.DataSet.LanguageData.TryGetValue(itemDefinition.ID.Guid, out languages))
+      var languages = this.DataSet.LanguageData.TryGetValue(itemDefinition.ID.Guid);
+      if (languages != null)
       {
         foreach (var pair in languages)
         {
@@ -131,10 +130,10 @@
             continue;
           }
 
-          foreach (var languageField in pair.Value ?? Empty.Fields)
-          {
-            list.Add(ID.Parse(languageField.Key), languageField.Value ?? string.Empty);
-          }
+          pair.Value?
+            .ToList()
+            .ForEach(languageField => 
+              list.Add(ID.Parse(languageField.Key), languageField.Value ?? string.Empty));
 
           break;
         }
@@ -160,7 +159,69 @@
 
     public override ID SelectSingleID(string query, CallContext context)
     {
-      throw new NotImplementedException("Fast Query and Sitecore Query are not yet implemented");
+      var ids = DoSelectIDs(query);
+      var result = ids.Count > 0 ? ids[0] : null;
+
+      Log.Info($"SelectSingleID: {query}, Value: {result}", this);
+      context.Abort();
+      return result;
+    }                             
+
+    private static readonly Regex DescendantsQueryRegex = new Regex(@"^fast\://\*(\[[^\]])$", RegexOptions.Compiled);
+
+    public override IDList SelectIDs(string query, CallContext context)
+    {
+      var list = DoSelectIDs(query);
+
+      Log.Info($"SelectID: {query}, Values: {string.Join(", ", list.ToArray())}", this);
+      context.Abort();
+      return list;
+    }
+
+    private IDList DoSelectIDs(string query)
+    {
+      // 18860 18:03:22 INFO  SelectSingleID: fast://*[@@templateid = '{F68F13A6-3395-426A-B9A1-FA2DC60D94EB}' and @@name = 'da']
+
+      var desc = DescendantsQueryRegex.Match(query);
+      var list = new IDList();
+      if (desc.NextMatch().Success)
+      {
+        var conditionsQueryGroup = desc.Groups[1];
+        var items = (IEnumerable<ItemInfo>)DataSet.ItemInfo.Values;
+        if (conditionsQueryGroup.Success)
+        {
+          var conditionsQuery = conditionsQueryGroup.Value;
+          if (string.IsNullOrEmpty(conditionsQuery))
+            throw new QueryException("Query must not contain empty square bracets []");
+
+          var conditions = conditionsQuery.Split(" and ");
+          foreach (var condition in conditions)
+          {
+            var arr = condition.Split('=');
+            Assert.IsTrue(arr.Length == 2, "wrong query");
+            var keyword = arr.First().Trim();
+            var value = arr.Last().Trim();
+            switch (keyword)
+            {
+              case "@@templateid":
+                var templateId = Guid.Parse(value);
+                items = items.Where(x => x.TemplateID == templateId);
+                break;
+
+              case "@@name":
+                var name = value;
+                items = items.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
+                break;
+
+              default:
+                throw new NotImplementedException();
+            }
+          }
+        }
+
+        items.Take(100).Select(x => x.ID).ToList().ForEach(x => list.Add(ID.Parse(x)));
+      }
+      return list;
     }
 
     public override bool HasChildren(ItemDefinition itemDefinition, CallContext context)
@@ -182,27 +243,22 @@
       return ids;
     }
 
-    public override ID GetRootID(CallContext context)
-    {
-      return base.GetRootID(context);
-    }
-
-    public override TemplateCollection GetTemplates(CallContext context)
-    {
-      return base.GetTemplates(context);
-    }
-
     public override LanguageCollection GetLanguages(CallContext context)
     {
+      var languages = DataSet.Children[Data.ItemIDs.LanguagesRootId]?
+        .Select(x => x?.Name)
+        .Where(x => !string.IsNullOrEmpty(x))
+        .Select(x => Language.Parse(x)) ?? new Language[0];
+
       context.Abort();
-      return new LanguageCollection(DataSet.Children[Guid.Parse("{64C4F646-A3FA-4205-B98E-4DE2C609B60F}")]?.Select(x => x?.Name).Where(x => !string.IsNullOrEmpty(x)).Select(x => Language.Parse(x)) ?? new Language[0]);
+      return new LanguageCollection(languages);
     }
 
     public override long GetDictionaryEntryCount()
     {
       var dictionaryEntryTemplateId = TemplateIDs.DictionaryEntry.Guid;
 
-      return this.DataSet.ItemInfo.Values?.Count(x => x.TemplateID == dictionaryEntryTemplateId) ?? 0;
+      return this.DataSet.ItemInfo.Values.Count(x => x.TemplateID == dictionaryEntryTemplateId);
     }
   }
 }

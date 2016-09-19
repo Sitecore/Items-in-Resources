@@ -13,8 +13,28 @@ namespace IR.Data.DataAccess
 
     public readonly ChildrenDataSet Children;
 
-    public DataSet(FileInfo definitions, FileInfo sharedData, FileInfo languageData) : this(definitions.OpenRead(), sharedData.OpenRead(), languageData.OpenRead())
+    public DataSet(FileInfo definitions, FileInfo sharedData, FileInfo languageData) : this(OpenDefinitions(definitions), OpenSharedData(sharedData), OpenLanguageData(languageData))
     {      
+    }
+
+    private static Stream OpenDefinitions(FileInfo file)
+    {
+      return Open(file);
+    }
+
+    private static Stream OpenSharedData(FileInfo file)
+    {
+      return Open(file);
+    }
+
+    private static Stream OpenLanguageData(FileInfo file)
+    {
+      return Open(file);
+    }
+
+    private static FileStream Open(FileInfo definitions)
+    {
+      return definitions.OpenRead();
     }
 
     public DataSet(Stream definitions, Stream sharedData, Stream languageData)

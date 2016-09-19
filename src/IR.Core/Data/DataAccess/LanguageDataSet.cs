@@ -29,5 +29,16 @@ namespace IR.Data.DataAccess
       item = versions ?? Empty.Versions;
       return true;
     }
+
+    public ItemLanguagesData TryGetValue(Guid itemId)
+    {
+      ItemLanguagesData versions;
+      if (!ItemsLanguageFields.TryGetValue(itemId, out versions))
+      {
+        return null;
+      }
+
+      return versions;
+    }
   }
 }

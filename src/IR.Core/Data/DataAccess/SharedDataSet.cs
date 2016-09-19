@@ -15,20 +15,12 @@ namespace IR.Data.DataAccess
       {
         this.SharedFields = Serializer.Deserialize<Dictionary<Guid, Dictionary<Guid, string>>>(reader);
       }                               
-    }
+    }         
 
-    public bool TryGetValue(Guid itemId, out Dictionary<Guid, string> sharedFields)
+    public Dictionary<Guid, string> TryGetValue(Guid itemId)
     {
       Dictionary<Guid, string> fields;
-      if (!SharedFields.TryGetValue(itemId, out fields))
-      {
-        sharedFields = null;
-        return false;
-      }
-
-      sharedFields = fields ?? Empty.Fields;
-        
-      return true;
+      return !SharedFields.TryGetValue(itemId, out fields) ? null : fields;
     }
   }
 }

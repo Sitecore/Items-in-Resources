@@ -60,6 +60,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Tests\ProtobufTests.cs" />
     <Compile Include="Resources\Resource.cs" />
+    <Compile Include="Tests\StringExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IR.Core\IR.Core.csproj">

@@ -113,12 +113,7 @@
 
       foreach (var language in item.Languages)
       {
-        var languageName = language.Name;
-        if (languageName != "en")
-        {
-          continue;
-        }
-
+        var languageName = language.Name;      
         var languageFields = new FieldsData();
         languages.Add(languageName, languageFields);
 
