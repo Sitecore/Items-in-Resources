@@ -2,6 +2,7 @@
 {
   using Sitecore.Collections;
   using Sitecore.Extensions;
+  using Sitecore.Extensions.Enumerable;
   using Sitecore.Globalization;
 
   public partial class CompositeDataProvider

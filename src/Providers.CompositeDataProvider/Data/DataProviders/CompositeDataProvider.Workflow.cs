@@ -3,6 +3,7 @@
   using System.Linq;
   using Sitecore.Data;
   using Sitecore.Extensions;
+  using Sitecore.Extensions.Enumerable;
   using Sitecore.Workflows;
 
   public partial class CompositeDataProvider

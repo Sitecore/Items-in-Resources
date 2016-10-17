@@ -104,9 +104,13 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sitecore.Helpers\Helpers.csproj">
-      <Project>{7E84783D-1DB2-4DFC-9229-380AE8066E57}</Project>
-      <Name>Helpers</Name>
+    <ProjectReference Include="..\Providers.AbstractDataProvider\AbstractDataProvider.csproj">
+      <Project>{7e84783d-1db2-4dfc-9229-380ae8066e57}</Project>
+      <Name>AbstractDataProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Providers.MemoryDataProvider\MemoryDataProvider.csproj">
+      <Project>{361cc68c-c85b-40d3-ae19-bacbf2709163}</Project>
+      <Name>MemoryDataProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\Providers.ProtobufDataProvider\ProtobufDataProvider.csproj">
       <Project>{97504e1f-1184-4731-90f0-ea9c07587198}</Project>

@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sitecore</RootNamespace>
-    <AssemblyName>Sitecore.Helpers.Tests</AssemblyName>
+    <AssemblyName>Sitecore.Data.DataProviders.ProtobufDataProvider.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -63,9 +63,9 @@
     <Compile Include="Tests\StringExtensionsTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sitecore.Helpers\Helpers.csproj">
+    <ProjectReference Include="..\Providers.AbstractDataProvider\AbstractDataProvider.csproj">
       <Project>{7E84783D-1DB2-4DFC-9229-380AE8066E57}</Project>
-      <Name>Helpers</Name>
+      <Name>AbstractDataProvider</Name>
     </ProjectReference>
     <ProjectReference Include="..\Providers.ProtobufDataProvider\ProtobufDataProvider.csproj">
       <Project>{97504e1f-1184-4731-90f0-ea9c07587198}</Project>

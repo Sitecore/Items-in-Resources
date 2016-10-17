@@ -6,6 +6,7 @@
   using Sitecore.Collections;
   using Sitecore.Data;
   using Sitecore.Extensions;
+  using Sitecore.Extensions.Enumerable;
   using Sitecore.Publishing.Pipelines.Publish;
   
   public partial class CompositeDataProvider

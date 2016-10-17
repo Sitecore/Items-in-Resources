@@ -4,6 +4,7 @@
   using Sitecore.Collections;
   using Sitecore.Data;
   using Sitecore.Extensions;
+  using Sitecore.Extensions.Enumerable;
 
   public partial class CompositeDataProvider
   {

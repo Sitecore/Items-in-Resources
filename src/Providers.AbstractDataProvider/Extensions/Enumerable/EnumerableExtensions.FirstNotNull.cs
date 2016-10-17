@@ -1,4 +1,4 @@
-﻿namespace Sitecore.Extensions
+﻿namespace Sitecore.Extensions.Enumerable
 {
   using System;
   using System.Collections.Generic;

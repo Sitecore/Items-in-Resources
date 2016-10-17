@@ -67,9 +67,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Sitecore.Helpers\Helpers.csproj">
-      <Project>{7E84783D-1DB2-4DFC-9229-380AE8066E57}</Project>
-      <Name>Helpers</Name>
+    <ProjectReference Include="..\Providers.AbstractDataProvider\AbstractDataProvider.csproj">
+      <Project>{7e84783d-1db2-4dfc-9229-380ae8066e57}</Project>
+      <Name>AbstractDataProvider</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

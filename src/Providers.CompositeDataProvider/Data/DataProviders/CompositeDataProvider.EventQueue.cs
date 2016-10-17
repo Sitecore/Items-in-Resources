@@ -3,6 +3,7 @@
   using Sitecore.Diagnostics;
   using Sitecore.Eventing;
   using Sitecore.Extensions;
+  using Sitecore.Extensions.Enumerable;
   using Sitecore.Reflection;
 
   public partial class CompositeDataProvider

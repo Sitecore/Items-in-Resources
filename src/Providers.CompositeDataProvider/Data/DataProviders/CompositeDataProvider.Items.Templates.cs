@@ -5,6 +5,7 @@
   using Sitecore.Data;
   using Sitecore.Data.Templates;
   using Sitecore.Extensions;
+  using Sitecore.Extensions.Enumerable;
 
   public partial class CompositeDataProvider
   {
