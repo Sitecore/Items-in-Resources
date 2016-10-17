@@ -2,7 +2,6 @@
 {
   using Sitecore.Diagnostics;
   using Sitecore.Eventing;
-  using Sitecore.Extensions;
   using Sitecore.Extensions.Enumerable;
   using Sitecore.Reflection;
 
@@ -21,7 +20,7 @@
           if (!_DatabaseInitialized)
           {
             foreach (var dataProvider in Providers)
-            {                                                        
+            {
               Log.Info($"Initializing {Database.Name} composite data provider", this);
               ReflectionUtil.SetProperty(dataProvider, "Database", Database);
             }

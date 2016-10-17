@@ -1,6 +1,6 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
-                       
+
 [assembly: AssemblyTitle("Sitecore.Website")]
 [assembly: AssemblyCompany("Sitecore")]
 [assembly: AssemblyProduct("Items-in-Resources")]

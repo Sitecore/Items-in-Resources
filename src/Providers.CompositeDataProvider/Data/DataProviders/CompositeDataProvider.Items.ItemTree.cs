@@ -2,8 +2,6 @@
 {
   using System.Linq;
   using Sitecore.Collections;
-  using Sitecore.Data;
-  using Sitecore.Extensions;
   using Sitecore.Extensions.Enumerable;
 
   public partial class CompositeDataProvider
@@ -43,6 +41,6 @@
     public override ID SelectSingleID(string query, CallContext context)
     {
       return Providers.FirstNotNull(x => x.SelectSingleID(query, context));
-    }              
+    }
   }
 }

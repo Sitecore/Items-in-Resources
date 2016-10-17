@@ -19,7 +19,7 @@
 
     public string DatabaseName { get; set; }
 
-    public string OutputDirectory { get; set; }       
+    public string OutputDirectory { get; set; }
 
     public void Execute()
     {
@@ -28,7 +28,7 @@
       Assert.ArgumentNotNullOrEmpty(OutputDirectory, nameof(OutputDirectory));
       Assert.ArgumentCondition(Directory.Exists(OutputDirectory), nameof(OutputDirectory), $"The specified directory does not exist: {OutputDirectory}");
       Assert.ArgumentCondition(Try(() => new SqlConnectionStringBuilder(ConnectionString)), nameof(ConnectionString), "$The specified connection string");
-                  
+
       using (var definitionsWriter = File.OpenWrite(Path.Combine(OutputDirectory, $"{DatabaseName}.definitions.dat")))
       {
         using (var sharedDataWriter = File.OpenWrite(Path.Combine(OutputDirectory, $"{DatabaseName}.data.shared.dat")))
@@ -42,7 +42,7 @@
             var context = ItemManager.Initialize(ConnectionString);
             var queue = new Queue<Item>();
             queue.Enqueue(context.GetItems().First(x => x.ID == ItemIDs.RootItemID));
-            while(queue.Count > 0)
+            while (queue.Count > 0)
             {
               var item = queue.Dequeue();
 
@@ -108,7 +108,7 @@
 
       foreach (var pair in item.Fields.Unversioned)
       {
-        var languageName = pair.Key;    
+        var languageName = pair.Key;
         FieldsData languageFields;
         if (!languages.TryGetValue(languageName, out languageFields))
         {
@@ -124,7 +124,7 @@
 
       foreach (var pair in item.Fields.Versioned)
       {
-        var languageName = pair.Key;    
+        var languageName = pair.Key;
         FieldsData languageFields;
         if (!languages.TryGetValue(languageName, out languageFields))
         {
@@ -139,7 +139,7 @@
 
         var lastVersion = pair.Value.Keys.Max(z => z);
         var versionedFields = pair.Value.Single(x => x.Key == lastVersion).Value;
-        if (versionedFields == null || !versionedFields.Any())
+        if ((versionedFields == null) || !versionedFields.Any())
         {
           continue;
         }

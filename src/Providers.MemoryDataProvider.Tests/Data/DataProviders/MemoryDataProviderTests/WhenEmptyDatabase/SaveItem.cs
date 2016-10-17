@@ -1,11 +1,10 @@
-﻿
-namespace Sitecore.Data.DataProviders.MemoryDataProviderTests.WhenEmptyDatabase
+﻿namespace Sitecore.Data.DataProviders.MemoryDataProviderTests.WhenEmptyDatabase
 {
-    public class SaveItem : Sitecore.Data.DataProviders.AbstractDataProviderTests.WhenEmptyDatabase.SaveItem
+  public class SaveItem : AbstractDataProviderTests.WhenEmptyDatabase.SaveItem
+  {
+    public SaveItem()
+      : base(new MemoryProviderTraits())
     {
-        public SaveItem()
-            : base(new MemoryProviderTraits())
-        {
-        }
     }
+  }
 }

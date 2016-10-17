@@ -2,9 +2,9 @@
 {
   using System;
   using System.Diagnostics;
+  using Microsoft.VisualStudio.TestTools.UnitTesting;
   using Sitecore.Data.DataAccess;
   using Sitecore.Resources;
-  using Microsoft.VisualStudio.TestTools.UnitTesting;
 
   [TestClass]
   public class PerformanceTests
@@ -34,7 +34,7 @@
       }
 
       GC.Collect();
-           
+
       // act and assert performance     
       var sw = new Stopwatch();
       var repeat = 1;
@@ -48,7 +48,7 @@
         DataSet.OpenRead(definitions, sharedData, langData);
         sw.Stop();
       }
-             
+
       Console.WriteLine(new TimeSpan(sw.Elapsed.Ticks / repeat));
     }
   }

@@ -7,24 +7,11 @@
   [Serializable]
   public class ListDictionary<T, K> : Dictionary<T, List<K>>
   {
-    #region Constructors
-
-    public ListDictionary()
-    {
-    }
-
-    protected ListDictionary([NotNull] SerializationInfo info, StreamingContext context)
-      : base(info, context)
-    {
-    }
-
-    #endregion
-
     #region Public properties
 
     /// <summary>
-    /// Returns list by the key, creating key if it doesn't exist.
-    /// </summary>              
+    ///   Returns list by the key, creating key if it doesn't exist.
+    /// </summary>
     public new List<K> this[T key]
     {
       get
@@ -45,6 +32,19 @@
       {
         base[key] = value;
       }
+    }
+
+    #endregion
+
+    #region Constructors
+
+    public ListDictionary()
+    {
+    }
+
+    protected ListDictionary([NotNull] SerializationInfo info, StreamingContext context)
+      : base(info, context)
+    {
     }
 
     #endregion

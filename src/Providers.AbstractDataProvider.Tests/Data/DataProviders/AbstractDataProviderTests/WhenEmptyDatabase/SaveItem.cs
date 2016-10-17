@@ -3,11 +3,11 @@
   using NUnit.Framework;
 
   [TestFixture]
-    public abstract class SaveItem : BaseProviderTest
+  public abstract class SaveItem : BaseProviderTest
+  {
+    protected SaveItem(ProviderTraits traits)
+      : base(traits)
     {
-        protected SaveItem(ProviderTraits traits)
-            : base(traits)
-        {
-        }
     }
+  }
 }

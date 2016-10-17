@@ -1,17 +1,12 @@
 ﻿namespace Sitecore.Data.DataProviders.AbstractDataProviderTests
 {
   public abstract class BaseProviderTest
+  {
+    protected BaseProviderTest(ProviderTraits traits)
     {
-        private ProviderTraits traits;
-
-        protected BaseProviderTest(ProviderTraits traits)
-        {
-            this.traits = traits;
-        }
-
-        protected ProviderTraits Traits
-        {
-            get { return this.traits; }
-        }
+      Traits = traits;
     }
+
+    protected ProviderTraits Traits { get; }
+  }
 }

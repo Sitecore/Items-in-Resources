@@ -4,11 +4,11 @@
   using System.Collections.Generic;
 
   internal static class EnumerableExtensions
-  {         
+  {
     [NotNull]
     public static IEnumerable<T> Apply<T>([NotNull] this IEnumerable<T> sequence, [NotNull] Action<T> action)
     {
-      foreach (T i in sequence)
+      foreach (var i in sequence)
       {
         action(i);
       }

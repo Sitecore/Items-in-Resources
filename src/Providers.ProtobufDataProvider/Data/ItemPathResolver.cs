@@ -6,7 +6,7 @@
   public static class ItemPathResolver
   {
     /// <summary>
-    /// Try to find item ID by path
+    ///   Try to find item ID by path
     /// </summary>
     /// <param name="itemPath"></param>
     /// <param name="childrenDataSet"></param>
@@ -14,11 +14,15 @@
     /// <returns></returns>
     public static bool TryResolvePath(string itemPath, ChildrenDataSet childrenDataSet, out Guid id)
     {
-      if (string.IsNullOrWhiteSpace(itemPath))    
+      if (string.IsNullOrWhiteSpace(itemPath))
+      {
         throw new ArgumentNullException(nameof(itemPath));
+      }
 
       if (childrenDataSet == null)
+      {
         throw new ArgumentNullException(nameof(childrenDataSet));
+      }
 
       if (!itemPath.StartsWith("/sitecore", StringComparison.OrdinalIgnoreCase))
       {
@@ -59,14 +63,14 @@
       }
 
       ItemInfo[] children;
-      if (!childrenDataSet.TryGetValue(id, out children) || children == null)
-      {                                   
+      if (!childrenDataSet.TryGetValue(id, out children) || (children == null))
+      {
         return false;
       }
 
       foreach (var child in children)
       {
-        if (child?.Name == null || !child.Name.Equals(word, StringComparison.OrdinalIgnoreCase))
+        if ((child?.Name == null) || !child.Name.Equals(word, StringComparison.OrdinalIgnoreCase))
         {
           continue;
         }
@@ -80,7 +84,7 @@
         id = childId;
         return true;
       }
-                       
+
       return false;
     }
   }

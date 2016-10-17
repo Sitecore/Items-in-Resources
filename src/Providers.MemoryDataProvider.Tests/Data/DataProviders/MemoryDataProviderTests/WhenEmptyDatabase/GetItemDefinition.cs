@@ -1,11 +1,10 @@
-﻿
-namespace Sitecore.Data.DataProviders.MemoryDataProviderTests.WhenEmptyDatabase
+﻿namespace Sitecore.Data.DataProviders.MemoryDataProviderTests.WhenEmptyDatabase
 {
-    public class GetItemDefinition : Sitecore.Data.DataProviders.AbstractDataProviderTests.WhenEmptyDatabase.GetItemDefinition
+  public class GetItemDefinition : AbstractDataProviderTests.WhenEmptyDatabase.GetItemDefinition
+  {
+    public GetItemDefinition()
+      : base(new MemoryProviderTraits())
     {
-        public GetItemDefinition()
-            : base(new MemoryProviderTraits())
-        {
-        }
     }
+  }
 }

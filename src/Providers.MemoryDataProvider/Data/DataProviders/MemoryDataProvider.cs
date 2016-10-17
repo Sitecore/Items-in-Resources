@@ -29,6 +29,62 @@ namespace Sitecore.Data.DataProviders
 
   public sealed partial class MemoryDataProvider : DataProvider
   {
+    #region Nested type: FieldsRow
+
+    [Serializable]
+    public class FieldsRow
+    {
+      #region Fields
+
+      public ID FieldID;
+      public ID ItemID;
+      public string Language;
+      public string Value;
+      public int Version;
+
+      #endregion
+    }
+
+    #endregion
+
+    #region Nested type: ItemsRow
+
+    [Serializable]
+    private class ItemsRow
+    {
+      #region Fields
+
+      public ID BranchID;
+      public ID ItemID;
+      public string Name;
+      public ID ParentID;
+      public ID TemplateID;
+
+      public readonly List<ID> Children = new List<ID>();
+
+      #endregion
+    }
+
+    #endregion
+
+    #region Nested type: PublishQueueRow
+
+    [Serializable]
+    public class PublishQueueRow
+    {
+      #region Fields
+
+      public string Action;
+      public DateTime Date;
+      public ID ItemID;
+      public string Language;
+      public int Version;
+
+      #endregion
+    }
+
+    #endregion
+
     #region Fields
 
     private const int CurrentStateVersion = 3;
@@ -44,7 +100,7 @@ namespace Sitecore.Data.DataProviders
     {
     }
 
-    private static int counter = 0;
+    private static int counter;
 
     [UsedImplicitly]
     [NotNull]
@@ -69,31 +125,31 @@ namespace Sitecore.Data.DataProviders
 
       var started = new AutoResetEvent(false);
       ManagedThreadPool.QueueUserWorkItem(
-          a =>
+        a =>
+        {
+          lock (this)
           {
-            lock (this)
+            started.Set();
+            try
             {
-              started.Set();
-              try
+              using (new SecurityDisabler())
               {
-                using (new SecurityDisabler())
+                lock (string.Intern(filename))
                 {
-                  lock (string.Intern(filename))
+                  if (!LoadFromFile(filename))
                   {
-                    if (!LoadFromFile(filename))
-                    {
-                      LoadTree(serializationPath);
-                      SaveToFile(filename);
-                    }
+                    LoadTree(serializationPath);
+                    SaveToFile(filename);
                   }
                 }
               }
-              catch (Exception e)
-              {
-                Log.Error(e.ToString(), this);
-              }
             }
-          });
+            catch (Exception e)
+            {
+              Log.Error(e.ToString(), this);
+            }
+          }
+        });
 
       started.WaitOne();
     }
@@ -107,49 +163,96 @@ namespace Sitecore.Data.DataProviders
     [NotNull]
     public string Name
     {
-      get { return "Memory"; }
+      get
+      {
+        return "Memory";
+      }
 
-      set { }
+      set
+      {
+      }
     }
 
     #endregion
 
     #region Private properties
+
     private Dictionary<ID, ItemsRow> Items
     {
-      get { return _State.items; }
+      get
+      {
+        return _State.items;
+      }
 
-      set { _State.items = value; }
+      set
+      {
+        _State.items = value;
+      }
     }
+
     private List<PublishQueueRow> PublishQueue
     {
-      get { return _State._publishQueue; }
+      get
+      {
+        return _State._publishQueue;
+      }
 
-      set { _State._publishQueue = value; }
+      set
+      {
+        _State._publishQueue = value;
+      }
     }
+
     private ListDictionary<ID, FieldsRow> SharedFields
     {
-      get { return _State.sharedFields; }
+      get
+      {
+        return _State.sharedFields;
+      }
 
-      set { _State.sharedFields = value; }
+      set
+      {
+        _State.sharedFields = value;
+      }
     }
+
     private ListDictionary<ID, FieldsRow> UnversionedFields
     {
-      get { return _State.unversionedFields; }
+      get
+      {
+        return _State.unversionedFields;
+      }
 
-      set { _State.unversionedFields = value; }
+      set
+      {
+        _State.unversionedFields = value;
+      }
     }
+
     private ListDictionary<ID, FieldsRow> VersionedFields
     {
-      get { return _State.versionedFields; }
+      get
+      {
+        return _State.versionedFields;
+      }
 
-      set { _State.versionedFields = value; }
+      set
+      {
+        _State.versionedFields = value;
+      }
     }
+
     private Dictionary<string, string> Properties
     {
-      get { return _State.properties; }
+      get
+      {
+        return _State.properties;
+      }
 
-      set { _State.properties = value; }
+      set
+      {
+        _State.properties = value;
+      }
     }
 
     #endregion
@@ -163,26 +266,31 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool AddToPublishQueue(
-        [NotNull] ID itemID,
-        [NotNull] string action,
-        DateTime date,
-        [NotNull] CallContext context)
+      [NotNull] ID itemID,
+      [NotNull] string action,
+      DateTime date,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
-        PublishQueue.Add(new PublishQueueRow { ItemID = itemID, Action = action, Date = date });
+        PublishQueue.Add(new PublishQueueRow
+        {
+          ItemID = itemID,
+          Action = action,
+          Date = date
+        });
         return true;
       }
     }
 
     public override int AddVersion(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] VersionUri baseVersion,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] VersionUri baseVersion,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
-        int result = -1;
+        var result = -1;
 
         if (baseVersion.Version.ToInt32() > 0)
         {
@@ -199,9 +307,9 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool ChangeFieldSharing(
-        [NotNull] TemplateField fieldDefinition,
-        TemplateFieldSharing sharing,
-        [NotNull] CallContext context)
+      [NotNull] TemplateField fieldDefinition,
+      TemplateFieldSharing sharing,
+      [NotNull] CallContext context)
     {
       var converter = GetFieldSharingConverter();
 
@@ -235,15 +343,15 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool ChangeTemplate(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] TemplateChangeList changeList,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] TemplateChangeList changeList,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
-        TemplateChangeList.TemplateChange[] changes = changeList.Changes;
+        var changes = changeList.Changes;
 
-        foreach (TemplateChangeList.TemplateChange change in changes)
+        foreach (var change in changes)
         {
           switch (change.Action)
           {
@@ -280,15 +388,15 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool CopyItem(
-        [NotNull] ItemDefinition source,
-        [NotNull] ItemDefinition destination,
-        [NotNull] string copyName,
-        [NotNull] ID copyID,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition source,
+      [NotNull] ItemDefinition destination,
+      [NotNull] string copyName,
+      [NotNull] ID copyID,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
-        ItemsRow item = Items[source.ID];
+        var item = Items[source.ID];
         Items[copyID] = new ItemsRow
         {
           ItemID = copyID,
@@ -300,19 +408,19 @@ namespace Sitecore.Data.DataProviders
 
         Items[destination.ID].Children.Add(copyID);
         Action<Dictionary<ID, List<FieldsRow>>> copyList =
-            dict =>
-                dict[copyID] =
-                    new List<FieldsRow>(
-                        dict[source.ID].Select(
-                            field =>
-                                new FieldsRow
-                                {
-                                  FieldID = field.FieldID,
-                                  ItemID = copyID,
-                                  Language = field.Language,
-                                  Version = field.Version,
-                                  Value = field.Value
-                                }));
+          dict =>
+            dict[copyID] =
+              new List<FieldsRow>(
+                dict[source.ID].Select(
+                  field =>
+                    new FieldsRow
+                    {
+                      FieldID = field.FieldID,
+                      ItemID = copyID,
+                      Language = field.Language,
+                      Version = field.Version,
+                      Value = field.Value
+                    }));
         copyList(SharedFields);
         copyList(UnversionedFields);
         copyList(VersionedFields);
@@ -322,11 +430,11 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool CreateItem(
-        [NotNull] ID itemID,
-        [NotNull] string itemName,
-        [NotNull] ID templateID,
-        [NotNull] ItemDefinition parent,
-        [NotNull] CallContext context)
+      [NotNull] ID itemID,
+      [NotNull] string itemName,
+      [NotNull] ID templateID,
+      [NotNull] ItemDefinition parent,
+      [NotNull] CallContext context)
     {
       Assert.ArgumentNotNullOrEmpty(itemID, nameof(itemID));
       Assert.ArgumentNotNullOrEmpty(itemName, nameof(itemName));
@@ -364,7 +472,7 @@ namespace Sitecore.Data.DataProviders
     {
       lock (this)
       {
-        ID parentId = GetParentID(itemDefinition, context);
+        var parentId = GetParentID(itemDefinition, context);
 
         Items.Remove(itemDefinition.ID);
         SharedFields.Remove(itemDefinition.ID);
@@ -394,10 +502,12 @@ namespace Sitecore.Data.DataProviders
     {
       return 0;
     }
+
     public override long GetDictionaryEntryCount()
     {
       return 0;
     }
+
     public override EventQueue GetEventQueue()
     {
       return NullEventQueue.Instance;
@@ -421,20 +531,21 @@ namespace Sitecore.Data.DataProviders
         return result;
       }
     }
+
     [NotNull]
     public override FieldList GetItemFields(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] VersionUri versionUri,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] VersionUri versionUri,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
         var result = new FieldList();
         VersionedFields[itemDefinition.ID].Where(
-            row => row.Language == versionUri.Language.ToString() && row.Version == versionUri.Version.ToInt32())
-            .Apply(row => result.Add(row.FieldID, row.Value));
+            row => (row.Language == versionUri.Language.ToString()) && (row.Version == versionUri.Version.ToInt32()))
+          .Apply(row => result.Add(row.FieldID, row.Value));
         UnversionedFields[itemDefinition.ID].Where(row => row.Language == versionUri.Language.ToString())
-            .Apply(row => result.Add(row.FieldID, row.Value));
+          .Apply(row => result.Add(row.FieldID, row.Value));
         SharedFields[itemDefinition.ID].Apply(row => result.Add(row.FieldID, row.Value));
         if (context.CurrentResult == null)
         {
@@ -446,16 +557,16 @@ namespace Sitecore.Data.DataProviders
 
     [NotNull]
     public override VersionUriList GetItemVersions(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
         var list = new VersionUriList();
         VersionedFields[itemDefinition.ID].GroupBy(f => f.Language + f.Version)
-            .Select(
-                p => new VersionUri(Language.Parse(p.First().Language), Data.Version.Parse(p.First().Version)))
-            .Apply(list.Add);
+          .Select(
+            p => new VersionUri(Language.Parse(p.First().Language), Data.Version.Parse(p.First().Version)))
+          .Apply(list.Add);
         return list;
       }
     }
@@ -469,8 +580,8 @@ namespace Sitecore.Data.DataProviders
         foreach (var list in VersionedFields.Values)
         {
           foreach (
-              FieldsRow f in
-                  list.Where(f => f.FieldID == FieldIDs.WorkflowState && f.Value == info.StateID.ToString()))
+            var f in
+            list.Where(f => (f.FieldID == FieldIDs.WorkflowState) && (f.Value == info.StateID.ToString())))
           {
             result.Add(new DataUri(f.ItemID, Language.Parse(f.Language), Data.Version.Parse(f.Version)));
           }
@@ -478,6 +589,7 @@ namespace Sitecore.Data.DataProviders
       }
       return result.ToArray();
     }
+
     [NotNull]
     public LanguageCollection GetLanguages()
     {
@@ -533,14 +645,16 @@ namespace Sitecore.Data.DataProviders
       lock (this)
       {
         var result = new IDList();
-        PublishQueue.Where(r => r.Date >= from && r.Date <= to).Apply(r => result.Add(r.ItemID));
+        PublishQueue.Where(r => (r.Date >= from) && (r.Date <= to)).Apply(r => result.Add(r.ItemID));
         return result;
       }
     }
+
     public override ID GetRootID([NotNull] CallContext context)
     {
       return ItemIDs.RootID;
     }
+
     public DefaultFieldSharing.SharingType GetSharingType([NotNull] TemplateField templateField)
     {
       if (templateField == null)
@@ -565,6 +679,7 @@ namespace Sitecore.Data.DataProviders
 
       return DefaultFieldSharing.SharingType.Unknown;
     }
+
     [NotNull]
     public override IdCollection GetTemplateItemIds([NotNull] CallContext context)
     {
@@ -572,7 +687,6 @@ namespace Sitecore.Data.DataProviders
       lock (this)
       {
         Items.Values.Where(r => r.TemplateID == TemplateIDs.Template).Apply(r => result.Add(r.ItemID));
-
       }
       return result;
     }
@@ -586,9 +700,9 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool MoveItem(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] ItemDefinition destination,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] ItemDefinition destination,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
@@ -621,26 +735,26 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool RemoveVersion(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] VersionUri version,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] VersionUri version,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
         VersionedFields[itemDefinition.ID] =
-            VersionedFields[itemDefinition.ID].Where(
-                r => r.Language != version.Language.ToString() || r.Version != version.Version.ToInt32())
-                .ToList();
+          VersionedFields[itemDefinition.ID].Where(
+              r => (r.Language != version.Language.ToString()) || (r.Version != version.Version.ToInt32()))
+            .ToList();
       }
 
       return true;
     }
 
     public override bool RemoveVersions(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] Language language,
-        bool removeSharedData,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] Language language,
+      bool removeSharedData,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
@@ -658,23 +772,23 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override void RenameLanguageData(
-        [NotNull] string fromLanguage,
-        [NotNull] string toLanguage,
-        [NotNull] CallContext context)
+      [NotNull] string fromLanguage,
+      [NotNull] string toLanguage,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
         UnversionedFields.Values.Apply(
-            list => list.Where(r => r.Language == fromLanguage).Apply(r => r.Language = toLanguage));
+          list => list.Where(r => r.Language == fromLanguage).Apply(r => r.Language = toLanguage));
         VersionedFields.Values.Apply(
-            list => list.Where(r => r.Language == fromLanguage).Apply(r => r.Language = toLanguage));
+          list => list.Where(r => r.Language == fromLanguage).Apply(r => r.Language = toLanguage));
       }
     }
 
     public override bool SaveItem(
-        [NotNull] ItemDefinition itemDefinition,
-        [NotNull] ItemChanges changes,
-        [NotNull] CallContext context)
+      [NotNull] ItemDefinition itemDefinition,
+      [NotNull] ItemChanges changes,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
@@ -696,9 +810,9 @@ namespace Sitecore.Data.DataProviders
     }
 
     public override bool SetProperty(
-        [NotNull] string parameterName,
-        [NotNull] string value,
-        [NotNull] CallContext context)
+      [NotNull] string parameterName,
+      [NotNull] string value,
+      [NotNull] CallContext context)
     {
       lock (this)
       {
@@ -706,6 +820,7 @@ namespace Sitecore.Data.DataProviders
       }
       return true;
     }
+
     public bool LoadFromFile([NotNull] string name)
     {
       lock (this)
@@ -720,7 +835,7 @@ namespace Sitecore.Data.DataProviders
 
           var formatter = new BinaryFormatter();
 
-          using (FileStream stream = File.OpenRead(name))
+          using (var stream = File.OpenRead(name))
           {
             var loadedState = (State)formatter.Deserialize(stream);
             if (CurrentStateVersion == loadedState.version)
@@ -739,12 +854,13 @@ namespace Sitecore.Data.DataProviders
         }
       }
     }
+
     public void SaveToFile([NotNull] string name)
     {
       lock (this)
       {
         _State.version = CurrentStateVersion;
-        using (FileStream stream = File.Create(name))
+        using (var stream = File.Create(name))
         {
           var formatter = new BinaryFormatter();
           formatter.Serialize(stream, _State);
@@ -758,7 +874,7 @@ namespace Sitecore.Data.DataProviders
 
     private void LoadTree(string serializationPath)
     {
-      foreach (var file in System.IO.Directory.GetFiles(serializationPath))
+      foreach (var file in Directory.GetFiles(serializationPath))
       {
         if (!SerializationUtils.IsItemSerialization(file))
         {
@@ -768,7 +884,7 @@ namespace Sitecore.Data.DataProviders
         LoadItem(file);
       }
 
-      foreach (var directory in System.IO.Directory.GetDirectories(serializationPath))
+      foreach (var directory in Directory.GetDirectories(serializationPath))
       {
         LoadTree(directory);
       }
@@ -821,26 +937,31 @@ namespace Sitecore.Data.DataProviders
 
         foreach (var field in item.SharedFields)
         {
-          ID fieldId = new ID(field.FieldID);
+          var fieldId = new ID(field.FieldID);
           SharedFields[itemId].Add(
-              new FieldsRow { ItemID = itemId, FieldID = fieldId, Value = field.FieldValue });
+            new FieldsRow
+            {
+              ItemID = itemId,
+              FieldID = fieldId,
+              Value = field.FieldValue
+            });
         }
 
         foreach (var version in item.Versions)
         {
-          int versionNumber = MainUtil.GetInt(version.Version, 0);
+          var versionNumber = MainUtil.GetInt(version.Version, 0);
           foreach (var field in version.Fields)
           {
-            ID fieldId = new ID(field.FieldID);
+            var fieldId = new ID(field.FieldID);
             VersionedFields[itemId].Add(
-                new FieldsRow
-                {
-                  ItemID = itemId,
-                  FieldID = fieldId,
-                  Language = version.Language,
-                  Version = versionNumber,
-                  Value = field.FieldValue
-                });
+              new FieldsRow
+              {
+                ItemID = itemId,
+                FieldID = fieldId,
+                Language = version.Language,
+                Version = versionNumber,
+                Value = field.FieldValue
+              });
           }
         }
       }
@@ -848,23 +969,24 @@ namespace Sitecore.Data.DataProviders
 
     private int AddBlankVersion([NotNull] ItemDefinition item, [NotNull] Language language)
     {
-      int newVersion = GetLatestVersion(item, language) + 1;
+      var newVersion = GetLatestVersion(item, language) + 1;
 
       VersionedFields[item.ID].Add(
-          new FieldsRow
-          {
-            ItemID = item.ID,
-            Language = language.ToString(),
-            Version = newVersion,
-            FieldID = FieldIDs.Created,
-            Value = DateUtil.IsoNowWithTicks
-          });
+        new FieldsRow
+        {
+          ItemID = item.ID,
+          Language = language.ToString(),
+          Version = newVersion,
+          FieldID = FieldIDs.Created,
+          Value = DateUtil.IsoNowWithTicks
+        });
 
       return newVersion;
     }
+
     private void ChangeTemplate_ChangeFieldID(
-        [NotNull] TemplateChangeList.TemplateChange change,
-        [NotNull] ID itemId)
+      [NotNull] TemplateChangeList.TemplateChange change,
+      [NotNull] ID itemId)
     {
       if (change.SourceField.ID == change.TargetField.ID)
       {
@@ -872,37 +994,39 @@ namespace Sitecore.Data.DataProviders
       }
 
       ChangeTemplate_ChangeFieldValues(itemId, change.SourceField.ID, change.TargetField.ID);
-      return;
     }
+
     private void ChangeTemplate_ChangeFieldSharing(
-        [NotNull] TemplateChangeList.TemplateChange change,
-        [NotNull] ID itemID)
+      [NotNull] TemplateChangeList.TemplateChange change,
+      [NotNull] ID itemID)
     {
       GetFieldSharingConverter().MoveFieldData(change.SourceField, change.TargetField, itemID);
     }
 
     private void ChangeTemplate_ChangeFieldValues(
-        [NotNull] ID itemId,
-        [NotNull] ID oldFieldId,
-        [NotNull] ID newFieldId)
+      [NotNull] ID itemId,
+      [NotNull] ID oldFieldId,
+      [NotNull] ID newFieldId)
     {
-      new[] { SharedFields.Values, UnversionedFields.Values, VersionedFields.Values }.Apply(
-          c =>
-              c.Apply(
-                  list =>
-                      list.Where(r => r.ItemID == itemId && r.FieldID == oldFieldId)
-                          .Apply(r => r.FieldID = newFieldId)));
+      new[] {SharedFields.Values, UnversionedFields.Values, VersionedFields.Values}.Apply(
+        c =>
+          c.Apply(
+            list =>
+              list.Where(r => (r.ItemID == itemId) && (r.FieldID == oldFieldId))
+                .Apply(r => r.FieldID = newFieldId)));
     }
+
     private void ChangeTemplate_ChangeTemplateID([NotNull] ID itemID, [NotNull] ID templateID)
     {
       Items[itemID].TemplateID = templateID;
     }
+
     private void ChangeTemplate_DeleteFieldID(
-        [NotNull] TemplateChangeList.TemplateChange change,
-        [NotNull] ID itemId)
+      [NotNull] TemplateChangeList.TemplateChange change,
+      [NotNull] ID itemId)
     {
       Action<List<FieldsRow>> delete =
-          list => { list.Where(r => r.FieldID == change.SourceField.ID).ToArray().Apply(r => list.Remove(r)); };
+        list => { list.Where(r => r.FieldID == change.SourceField.ID).ToArray().Apply(r => list.Remove(r)); };
 
       SharedFields.Values.Apply(delete);
       UnversionedFields.Values.Apply(delete);
@@ -916,24 +1040,25 @@ namespace Sitecore.Data.DataProviders
         return -1;
       }
 
-      int newVersion = GetLatestVersion(item, baseVersion.Language) + 1;
+      var newVersion = GetLatestVersion(item, baseVersion.Language) + 1;
 
       VersionedFields[item.ID].AddRange(
-          VersionedFields[item.ID].Where(
-              r => r.Language == baseVersion.Language.ToString() && r.Version == baseVersion.Version.ToInt32())
-              .Select(
-                  r =>
-                      new FieldsRow
-                      {
-                        ItemID = item.ID,
-                        Language = r.Language,
-                        Version = newVersion,
-                        FieldID = r.FieldID,
-                        Value = r.Value
-                      }));
+        VersionedFields[item.ID].Where(
+            r => (r.Language == baseVersion.Language.ToString()) && (r.Version == baseVersion.Version.ToInt32()))
+          .Select(
+            r =>
+              new FieldsRow
+              {
+                ItemID = item.ID,
+                Language = r.Language,
+                Version = newVersion,
+                FieldID = r.FieldID,
+                Value = r.Value
+              }));
 
       return newVersion;
     }
+
     [NotNull]
     private FieldSharingConverter GetFieldSharingConverter()
     {
@@ -943,14 +1068,15 @@ namespace Sitecore.Data.DataProviders
     private int GetLatestVersion([NotNull] ItemDefinition item, [NotNull] Language language)
     {
       return
-          VersionedFields[item.ID].Where(r => r.ItemID == item.ID && r.Language == language.ToString())
-              .Select(r => r.Version)
-              .Concat(new[] { 0 })
-              .Max();
+        VersionedFields[item.ID].Where(r => (r.ItemID == item.ID) && (r.Language == language.ToString()))
+          .Select(r => r.Version)
+          .Concat(new[] {0})
+          .Max();
     }
+
     private DefaultFieldSharing.SharingType GetSharingType([NotNull] FieldChange change)
     {
-      TemplateField definition = change.Definition;
+      var definition = change.Definition;
 
       if (definition == null)
       {
@@ -959,47 +1085,51 @@ namespace Sitecore.Data.DataProviders
 
       return GetSharingType(definition);
     }
+
     [NotNull]
     private List<Data.Version> GetVersions()
     {
       return
-          VersionedFields.Values.Cast<IEnumerable<FieldsRow>>()
-              .Aggregate((a, b) => a.Concat(b))
-              .GroupBy(r => r.Version)
-              .Select(g => new Data.Version(g.Key))
-              .ToList();
+        VersionedFields.Values.Cast<IEnumerable<FieldsRow>>()
+          .Aggregate((a, b) => a.Concat(b))
+          .GroupBy(r => r.Version)
+          .Select(g => new Data.Version(g.Key))
+          .ToList();
     }
+
     private bool ItemExists([NotNull] ID itemId)
     {
       return Items.ContainsKey(itemId);
     }
+
     private void RemoveAllVersions([NotNull] ItemDefinition item)
     {
       VersionedFields.Remove(item.ID);
     }
+
     private void RemoveField([NotNull] ID itemId, [NotNull] FieldChange change)
     {
-      DefaultFieldSharing.SharingType sharing = GetSharingType(change);
+      var sharing = GetSharingType(change);
 
-      if (sharing == DefaultFieldSharing.SharingType.Versioned
-          || sharing == DefaultFieldSharing.SharingType.Unknown)
+      if ((sharing == DefaultFieldSharing.SharingType.Versioned)
+          || (sharing == DefaultFieldSharing.SharingType.Unknown))
       {
         VersionedFields[itemId].Delete(
-            r =>
-                r.Language == change.Language.ToString() && r.Version == change.Version.ToInt32()
-                && r.FieldID == change.FieldID);
+          r =>
+            (r.Language == change.Language.ToString()) && (r.Version == change.Version.ToInt32())
+            && (r.FieldID == change.FieldID));
       }
 
-      if (sharing == DefaultFieldSharing.SharingType.Shared || sharing == DefaultFieldSharing.SharingType.Unknown)
+      if ((sharing == DefaultFieldSharing.SharingType.Shared) || (sharing == DefaultFieldSharing.SharingType.Unknown))
       {
         SharedFields[itemId].Delete(r => r.FieldID == change.FieldID);
       }
 
-      if (sharing == DefaultFieldSharing.SharingType.Unversioned
-          || sharing == DefaultFieldSharing.SharingType.Unknown)
+      if ((sharing == DefaultFieldSharing.SharingType.Unversioned)
+          || (sharing == DefaultFieldSharing.SharingType.Unknown))
       {
         UnversionedFields[itemId].Delete(
-            r => r.Language == change.Language.ToString() && r.FieldID == change.FieldID);
+          r => (r.Language == change.Language.ToString()) && (r.FieldID == change.FieldID));
       }
     }
 
@@ -1007,16 +1137,17 @@ namespace Sitecore.Data.DataProviders
     {
       SharedFields.Remove(itemId);
       {
-        List<FieldsRow> itemFields = UnversionedFields[itemId];
+        var itemFields = UnversionedFields[itemId];
         itemFields.Where(r => r.Language == language.ToString()).ToList().Apply(r => itemFields.Remove(r));
       }
       {
         var itemFields = VersionedFields[itemId];
-        itemFields.Where(r => r.Language == language.ToString() && r.Version == version.ToInt32())
-            .ToList()
-            .Apply(r => itemFields.Remove(r));
+        itemFields.Where(r => (r.Language == language.ToString()) && (r.Version == version.ToInt32()))
+          .ToList()
+          .Apply(r => itemFields.Remove(r));
       }
     }
+
     private void RemoveLanguageData([NotNull] string languageName)
     {
       UnversionedFields.Values.Apply(list => list.Delete(r => r.Language == languageName));
@@ -1024,9 +1155,9 @@ namespace Sitecore.Data.DataProviders
     }
 
     private void RemoveLanguageVersions(
-        [NotNull] ItemDefinition item,
-        [NotNull] Language language,
-        bool removeSharedData)
+      [NotNull] ItemDefinition item,
+      [NotNull] Language language,
+      bool removeSharedData)
     {
       if (removeSharedData)
       {
@@ -1036,9 +1167,10 @@ namespace Sitecore.Data.DataProviders
       UnversionedFields[item.ID].Delete(r => r.Language == language.ToString());
       VersionedFields[item.ID].Delete(r => r.Language == language.ToString());
     }
+
     private void UpdateItemDefinition([NotNull] ItemDefinition item, [NotNull] ItemChanges changes)
     {
-      string itemName = StringUtil.GetString(changes.GetPropertyValue("name"), item.Name);
+      var itemName = StringUtil.GetString(changes.GetPropertyValue("name"), item.Name);
       var templateID = MainUtil.GetObject(changes.GetPropertyValue("templateid"), item.TemplateID) as ID;
       var branchId = MainUtil.GetObject(changes.GetPropertyValue("branchid"), item.BranchId) as ID;
 
@@ -1053,25 +1185,26 @@ namespace Sitecore.Data.DataProviders
       r.TemplateID = templateID;
       r.BranchID = branchId;
     }
+
     private void UpdateItemFields([NotNull] ID itemId, [NotNull] ItemChanges changes)
     {
       Assert.ArgumentNotNull(itemId, "value");
       lock ((object)this)
       {
-        DateTime now = DateTime.Now;
+        var now = DateTime.Now;
 
-        bool fullUpdate = changes.Item.RuntimeSettings.SaveAll;
+        var fullUpdate = changes.Item.RuntimeSettings.SaveAll;
         if (fullUpdate)
         {
           RemoveFields(itemId, changes.Item.Language, changes.Item.Version);
         }
 
         var updateOrder = new[]
-                          {
-                                      DefaultFieldSharing.SharingType.Shared, DefaultFieldSharing.SharingType.Unversioned,
-                                      DefaultFieldSharing.SharingType.Versioned
-                                  };
-        foreach (DefaultFieldSharing.SharingType sharingType in updateOrder)
+        {
+          DefaultFieldSharing.SharingType.Shared, DefaultFieldSharing.SharingType.Unversioned,
+          DefaultFieldSharing.SharingType.Versioned
+        };
+        foreach (var sharingType in updateOrder)
         {
           foreach (FieldChange change in changes.FieldChanges)
           {
@@ -1112,25 +1245,30 @@ namespace Sitecore.Data.DataProviders
     private bool VersionExists([NotNull] ItemDefinition item, [NotNull] VersionUri versionUri)
     {
       return
-          VersionedFields[item.ID].Any(
-              r =>
-                  r.ItemID == item.ID && r.Language == versionUri.Language.ToString()
-                  && r.Version == versionUri.Version.ToInt32());
+        VersionedFields[item.ID].Any(
+          r =>
+            (r.ItemID == item.ID) && (r.Language == versionUri.Language.ToString())
+            && (r.Version == versionUri.Version.ToInt32()));
     }
 
     private void WriteSharedField(
-        [NotNull] ID itemId,
-        [NotNull] FieldChange change,
-        DateTime now,
-        bool fieldsAreEmpty)
+      [NotNull] ID itemId,
+      [NotNull] FieldChange change,
+      DateTime now,
+      bool fieldsAreEmpty)
     {
-      FieldsRow row = fieldsAreEmpty
-          ? null
-          : SharedFields[itemId].Where(r => r.FieldID == change.FieldID).FirstOrDefault();
+      var row = fieldsAreEmpty
+        ? null
+        : SharedFields[itemId].Where(r => r.FieldID == change.FieldID).FirstOrDefault();
       if (row == null)
       {
         SharedFields[itemId].Add(
-            new FieldsRow { ItemID = itemId, FieldID = change.FieldID, Value = change.Value });
+          new FieldsRow
+          {
+            ItemID = itemId,
+            FieldID = change.FieldID,
+            Value = change.Value
+          });
       }
       else
       {
@@ -1139,25 +1277,25 @@ namespace Sitecore.Data.DataProviders
     }
 
     private void WriteUnversionedField(
-        [NotNull] ID itemId,
-        [NotNull] FieldChange change,
-        DateTime now,
-        bool fieldsAreEmpty)
+      [NotNull] ID itemId,
+      [NotNull] FieldChange change,
+      DateTime now,
+      bool fieldsAreEmpty)
     {
-      FieldsRow row = fieldsAreEmpty
-          ? null
-          : UnversionedFields[itemId].Where(
-              r => r.Language == change.Language.ToString() && r.FieldID == change.FieldID).FirstOrDefault();
+      var row = fieldsAreEmpty
+        ? null
+        : UnversionedFields[itemId].Where(
+          r => (r.Language == change.Language.ToString()) && (r.FieldID == change.FieldID)).FirstOrDefault();
       if (row == null)
       {
         UnversionedFields[itemId].Add(
-            new FieldsRow
-            {
-              ItemID = itemId,
-              Language = change.Language.ToString(),
-              FieldID = change.FieldID,
-              Value = change.Value
-            });
+          new FieldsRow
+          {
+            ItemID = itemId,
+            Language = change.Language.ToString(),
+            FieldID = change.FieldID,
+            Value = change.Value
+          });
       }
       else
       {
@@ -1166,28 +1304,28 @@ namespace Sitecore.Data.DataProviders
     }
 
     private void WriteVersionedField(
-        [NotNull] ID itemId,
-        [NotNull] FieldChange change,
-        DateTime now,
-        bool fieldsAreEmpty)
+      [NotNull] ID itemId,
+      [NotNull] FieldChange change,
+      DateTime now,
+      bool fieldsAreEmpty)
     {
-      FieldsRow row = fieldsAreEmpty
-          ? null
-          : VersionedFields[itemId].Where(
-              r =>
-                  r.Language == change.Language.ToString() && r.Version == change.Version.ToInt32()
-                  && r.FieldID == change.FieldID).FirstOrDefault();
+      var row = fieldsAreEmpty
+        ? null
+        : VersionedFields[itemId].Where(
+          r =>
+            (r.Language == change.Language.ToString()) && (r.Version == change.Version.ToInt32())
+            && (r.FieldID == change.FieldID)).FirstOrDefault();
       if (row == null)
       {
         VersionedFields[itemId].Add(
-            new FieldsRow
-            {
-              ItemID = itemId,
-              Language = change.Language.ToString(),
-              Version = change.Version.ToInt32(),
-              FieldID = change.FieldID,
-              Value = change.Value
-            });
+          new FieldsRow
+          {
+            ItemID = itemId,
+            Language = change.Language.ToString(),
+            Version = change.Version.ToInt32(),
+            FieldID = change.FieldID,
+            Value = change.Value
+          });
       }
       else
       {
@@ -1196,55 +1334,5 @@ namespace Sitecore.Data.DataProviders
     }
 
     #endregion
-
-    #region Nested type: FieldsRow
-    [Serializable]
-    public class FieldsRow
-    {
-      #region Fields
-      public ID FieldID;
-      public ID ItemID;
-      public string Language;
-      public string Value;
-      public int Version;
-
-      #endregion
-    }
-
-    #endregion
-
-    #region Nested type: ItemsRow
-    [Serializable]
-    private class ItemsRow
-    {
-      #region Fields
-      public ID BranchID;
-      public ID ItemID;
-      public string Name;
-      public ID ParentID;
-      public ID TemplateID;
-
-      public readonly List<ID> Children = new List<ID>();
-
-      #endregion
-    }
-
-    #endregion
-
-    #region Nested type: PublishQueueRow
-    [Serializable]
-    public class PublishQueueRow
-    {
-      #region Fields
-      public string Action;
-      public DateTime Date;
-      public ID ItemID;
-      public string Language;
-      public int Version;
-
-      #endregion
-    }
-
-    #endregion     
   }
 }

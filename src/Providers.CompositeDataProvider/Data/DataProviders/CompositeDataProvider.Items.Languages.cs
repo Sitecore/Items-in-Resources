@@ -1,7 +1,6 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using Sitecore.Collections;
-  using Sitecore.Extensions;
   using Sitecore.Extensions.Enumerable;
   using Sitecore.Globalization;
 
@@ -22,6 +21,6 @@
     public override void RenameLanguageData(string fromLanguage, string toLanguage, CallContext context)
     {
       Providers.ForEach(x => x.RenameLanguageData(fromLanguage, toLanguage, context));
-    }            
+    }
   }
 }

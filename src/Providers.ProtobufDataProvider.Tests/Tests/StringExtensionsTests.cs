@@ -10,7 +10,7 @@
     public void SplitTest1()
     {
       var result = "ab||bc||cd".Split("||").ToArray();
-      
+
       Assert.AreEqual(3, result.Length);
       Assert.AreEqual("ab", result[0]);
       Assert.AreEqual("bc", result[1]);

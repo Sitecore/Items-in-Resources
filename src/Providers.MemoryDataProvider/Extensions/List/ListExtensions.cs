@@ -1,4 +1,4 @@
-﻿namespace Sitecore.Extensions.List
+namespace Sitecore.Extensions.List
 {
   using System;
   using System.Collections.Generic;
@@ -6,10 +6,10 @@
   using Sitecore.Extensions.Enumerable;
 
   internal static class ListExtensions
-  {               
+  {
     public static List<T> Add<T>([NotNull] this List<T> list, [NotNull] IEnumerable<T> collection)
     {
-      foreach (T i in collection)
+      foreach (var i in collection)
       {
         list.Add(i);
       }
@@ -21,6 +21,6 @@
     {
       list.Where(predicate).ToList().Apply(r => list.Remove(r));
       return list;
-    }           
+    }
   }
 }

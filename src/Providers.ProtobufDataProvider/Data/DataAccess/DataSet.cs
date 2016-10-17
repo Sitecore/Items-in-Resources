@@ -4,17 +4,29 @@ namespace Sitecore.Data.DataAccess
   using ProtoBuf;
 
   public class DataSet
-  {                                          
+  {
+    public readonly ChildrenDataSet Children;
     public readonly ItemInfoSet ItemInfo;
-                                             
-    public readonly SharedDataSet SharedData;
-                                             
+
     public readonly LanguageDataSet LanguageData;
 
-    public readonly ChildrenDataSet Children;
+    public readonly SharedDataSet SharedData;
 
     public DataSet(FileInfo definitions, FileInfo sharedData, FileInfo languageData) : this(OpenDefinitions(definitions), OpenSharedData(sharedData), OpenLanguageData(languageData))
-    {      
+    {
+    }
+
+    public DataSet(Stream definitions, Stream sharedData, Stream languageData)
+    {
+      using (definitions)
+      {
+        ItemInfo = Serializer.Deserialize<ItemInfoSet>(definitions);
+      }
+
+      Children = new ChildrenDataSet(ItemInfo);
+
+      SharedData = new SharedDataSet(sharedData);
+      LanguageData = new LanguageDataSet(languageData);
     }
 
     private static Stream OpenDefinitions(FileInfo file)
@@ -37,22 +49,9 @@ namespace Sitecore.Data.DataAccess
       return definitions.OpenRead();
     }
 
-    public DataSet(Stream definitions, Stream sharedData, Stream languageData)
-    {
-      using (definitions)
-      {
-        ItemInfo = Serializer.Deserialize<ItemInfoSet>(definitions);
-      }
-
-      Children = new ChildrenDataSet(ItemInfo);
-
-      SharedData = new SharedDataSet(sharedData);
-      LanguageData = new LanguageDataSet(languageData);
-    }           
-
     public static DataSet OpenRead(Stream definitions, Stream sharedData, Stream langData)
     {
-      return new DataSet(definitions, sharedData, langData);      
+      return new DataSet(definitions, sharedData, langData);
     }
   }
 }

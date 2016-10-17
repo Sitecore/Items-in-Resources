@@ -1,12 +1,10 @@
-﻿
-namespace Sitecore.Data.DataProviders.MemoryDataProviderTests.Contracts
+﻿namespace Sitecore.Data.DataProviders.MemoryDataProviderTests.Contracts
 {
-    public class CreateItem : Sitecore.Data.DataProviders.AbstractDataProviderTests.Contracts.CreateItem
+  public class CreateItem : AbstractDataProviderTests.Contracts.CreateItem
+  {
+    public CreateItem()
+      : base(new MemoryProviderTraits())
     {
-        public CreateItem()
-            : base(new MemoryProviderTraits())
-        {
-            
-        }
     }
+  }
 }

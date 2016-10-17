@@ -4,9 +4,9 @@ namespace Sitecore.Tests
   using System.Collections.Generic;
   using System.IO;
   using System.Linq;
-  using Sitecore.Data;
   using Microsoft.VisualStudio.TestTools.UnitTesting;
   using ProtoBuf;
+  using Sitecore.Data;
 
   [TestClass]
   public class ProtobufTests
@@ -62,8 +62,8 @@ namespace Sitecore.Tests
       var stream = new MemoryStream();
       var source = new Dictionary<Guid, string>
       {
-        { Guid.NewGuid(), "Test1" },
-        { Guid.NewGuid(), "Test2" }
+        {Guid.NewGuid(), "Test1"},
+        {Guid.NewGuid(), "Test2"}
       };
 
       var wrapIn = new Wrap1
@@ -95,7 +95,7 @@ namespace Sitecore.Tests
       for (var i = 0; i < size; ++i)
       {
         source.Add(Guid.NewGuid(), new KeyValuePair<string, Guid>("12345678901234567890123", Guid.NewGuid())); // ID, 23-char name, TemplateID = 69B
-      }   
+      }
 
       var wrapIn = new Wrap2
       {

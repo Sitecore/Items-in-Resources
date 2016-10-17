@@ -3,7 +3,7 @@
   using Sitecore.Data;
 
   internal static class ItemExtensions
-  {  
+  {
     [NotNull]
     public static ItemDefinition Clone([NotNull] this ItemDefinition original, [NotNull] ID newid)
     {

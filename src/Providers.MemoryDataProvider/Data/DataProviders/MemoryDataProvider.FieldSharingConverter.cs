@@ -32,9 +32,9 @@
       #region Public Methods
 
       public bool ChangeShareType(
-          [NotNull] ID fieldId,
-          DefaultFieldSharing.SharingType sourceType,
-          DefaultFieldSharing.SharingType targetType)
+        [NotNull] ID fieldId,
+        DefaultFieldSharing.SharingType sourceType,
+        DefaultFieldSharing.SharingType targetType)
       {
         if (sourceType == targetType)
         {
@@ -141,9 +141,9 @@
       }
 
       public bool MoveFieldData(
-          [NotNull] TemplateField sourceField,
-          [NotNull] TemplateField targetField,
-          [NotNull] ID itemID)
+        [NotNull] TemplateField sourceField,
+        [NotNull] TemplateField targetField,
+        [NotNull] ID itemID)
       {
         if (targetField.IsShared)
         {
@@ -285,15 +285,20 @@
           else
           {
             rows =
-                Owner.UnversionedFields.Values.Select(list => list.Where(r => r.FieldID == fieldId))
-                    .Aggregate((a, b) => a.Concat(b));
+              Owner.UnversionedFields.Values.Select(list => list.Where(r => r.FieldID == fieldId))
+                .Aggregate((a, b) => a.Concat(b));
 
             rows =
-                rows.GroupBy(r => r.ItemID.ToString())
-                    .Select(g => g.First(r => r.Language == g.Max(r1 => r1.Language)));
+              rows.GroupBy(r => r.ItemID.ToString())
+                .Select(g => g.First(r => r.Language == g.Max(r1 => r1.Language)));
           }
 
-          rows = rows.Select(r => new FieldsRow { ItemID = r.ItemID, FieldID = r.FieldID, Value = r.Value });
+          rows = rows.Select(r => new FieldsRow
+          {
+            ItemID = r.ItemID,
+            FieldID = r.FieldID,
+            Value = r.Value
+          });
 
           foreach (var row in rows)
           {
@@ -323,17 +328,22 @@
           else
           {
             rows =
-                Owner.VersionedFields.Values.Select(l => l.Where(f => f.FieldID == fieldId))
-                    .Aggregate((a, b) => a.Concat(b));
+              Owner.VersionedFields.Values.Select(l => l.Where(f => f.FieldID == fieldId))
+                .Aggregate((a, b) => a.Concat(b));
             rows =
-                rows.GroupBy(r => r.ItemID.ToString())
-                    .Select(
-                        g => g.First(r => r.Language + r.Version == g.Max(r1 => r1.Language + r1.Version)));
+              rows.GroupBy(r => r.ItemID.ToString())
+                .Select(
+                  g => g.First(r => r.Language + r.Version == g.Max(r1 => r1.Language + r1.Version)));
           }
 
-          rows = rows.Select(r => new FieldsRow { ItemID = r.ItemID, FieldID = r.FieldID, Value = r.Value });
+          rows = rows.Select(r => new FieldsRow
+          {
+            ItemID = r.ItemID,
+            FieldID = r.FieldID,
+            Value = r.Value
+          });
 
-          foreach (FieldsRow row in rows)
+          foreach (var row in rows)
           {
             Owner.SharedFields[row.ItemID].Add(row);
           }
@@ -362,27 +372,27 @@
             else
             {
               rows =
-                  Owner.SharedFields.Values.Select(list => list.Where(r => r.FieldID == fieldId))
-                      .Aggregate((a, b) => a.Concat(b));
+                Owner.SharedFields.Values.Select(list => list.Where(r => r.FieldID == fieldId))
+                  .Aggregate((a, b) => a.Concat(b));
             }
 
             rows =
-                rows.Where(
-                    r =>
-                        Owner.VersionedFields.Values.Select(
-                            list => list.Any(v => v.ItemID == r.ItemID && v.Language == language.ToString()))
-                            .Any(b => b));
+              rows.Where(
+                r =>
+                  Owner.VersionedFields.Values.Select(
+                      list => list.Any(v => (v.ItemID == r.ItemID) && (v.Language == language.ToString())))
+                    .Any(b => b));
             rows =
-                rows.Select(
-                    r =>
-                        new FieldsRow
-                        {
-                          ItemID = r.ItemID,
-                          FieldID = r.FieldID,
-                          Language = language.ToString(),
-                          Value = r.Value
-                        });
-            foreach (FieldsRow row in rows)
+              rows.Select(
+                r =>
+                  new FieldsRow
+                  {
+                    ItemID = r.ItemID,
+                    FieldID = r.FieldID,
+                    Language = language.ToString(),
+                    Value = r.Value
+                  });
+            foreach (var row in rows)
             {
               Owner.UnversionedFields[row.ItemID].Add(row);
             }
@@ -411,30 +421,30 @@
             if (itemId != Data.ID.Null)
             {
               rows =
-                  Owner.VersionedFields[itemId].Where(
-                      r => r.FieldID == fieldId && r.Language == language.ToString());
+                Owner.VersionedFields[itemId].Where(
+                  r => (r.FieldID == fieldId) && (r.Language == language.ToString()));
             }
             else
             {
               rows =
-                  Owner.VersionedFields.Values.Select(
-                      list => list.Where(r => r.FieldID == fieldId && r.Language == language.ToString()))
-                      .Aggregate((a, b) => a.Concat(b));
+                Owner.VersionedFields.Values.Select(
+                    list => list.Where(r => (r.FieldID == fieldId) && (r.Language == language.ToString())))
+                  .Aggregate((a, b) => a.Concat(b));
               rows =
-                  rows.GroupBy(r => r.ItemID.ToString())
-                      .Select(g => g.First(r => r.Version == g.Max(r1 => r1.Version)));
+                rows.GroupBy(r => r.ItemID.ToString())
+                  .Select(g => g.First(r => r.Version == g.Max(r1 => r1.Version)));
             }
 
             rows =
-                rows.Select(
-                    r =>
-                        new FieldsRow
-                        {
-                          ItemID = r.ItemID,
-                          FieldID = r.FieldID,
-                          Language = language.ToString(),
-                          Value = r.Value
-                        });
+              rows.Select(
+                r =>
+                  new FieldsRow
+                  {
+                    ItemID = r.ItemID,
+                    FieldID = r.FieldID,
+                    Language = language.ToString(),
+                    Value = r.Value
+                  });
 
             foreach (var row in rows)
             {
@@ -470,30 +480,30 @@
               else
               {
                 rows =
-                    Owner.SharedFields.Values.Select(list => list.Where(r => r.FieldID == fieldId))
-                        .Aggregate((a, b) => a.Concat(b));
+                  Owner.SharedFields.Values.Select(list => list.Where(r => r.FieldID == fieldId))
+                    .Aggregate((a, b) => a.Concat(b));
               }
 
               rows =
-                  rows.Where(
-                      r =>
-                          Owner.VersionedFields.Values.Select(
-                              list =>
-                                  list.Any(
-                                      v =>
-                                          v.ItemID == r.ItemID && v.Language == language.ToString()
-                                          && v.Version == version.ToInt32())).Any(b => b));
+                rows.Where(
+                  r =>
+                    Owner.VersionedFields.Values.Select(
+                      list =>
+                        list.Any(
+                          v =>
+                            (v.ItemID == r.ItemID) && (v.Language == language.ToString())
+                            && (v.Version == version.ToInt32()))).Any(b => b));
               rows =
-                  rows.Select(
-                      r =>
-                          new FieldsRow
-                          {
-                            ItemID = r.ItemID,
-                            Language = language.ToString(),
-                            Version = version.ToInt32(),
-                            FieldID = r.FieldID,
-                            Value = r.Value
-                          });
+                rows.Select(
+                  r =>
+                    new FieldsRow
+                    {
+                      ItemID = r.ItemID,
+                      Language = language.ToString(),
+                      Version = version.ToInt32(),
+                      FieldID = r.FieldID,
+                      Value = r.Value
+                    });
 
               foreach (var row in rows)
               {
@@ -528,34 +538,34 @@
               else
               {
                 rows =
-                    Owner.UnversionedFields.Values.Select(
-                        list =>
-                            list.Where(r => r.FieldID == fieldId && r.Language == language.ToString()))
-                        .Aggregate((a, b) => a.Concat(b));
+                  Owner.UnversionedFields.Values.Select(
+                      list =>
+                          list.Where(r => (r.FieldID == fieldId) && (r.Language == language.ToString())))
+                    .Aggregate((a, b) => a.Concat(b));
               }
 
               rows =
-                  rows.Where(
-                      r =>
-                          Owner.VersionedFields.Values.Select(
-                              list =>
-                                  list.Any(
-                                      v =>
-                                          v.ItemID == r.ItemID && v.Language == language.ToString()
-                                          && v.Version == version.ToInt32())).Any(b => b));
+                rows.Where(
+                  r =>
+                    Owner.VersionedFields.Values.Select(
+                      list =>
+                        list.Any(
+                          v =>
+                            (v.ItemID == r.ItemID) && (v.Language == language.ToString())
+                            && (v.Version == version.ToInt32()))).Any(b => b));
               rows =
-                  rows.Select(
-                      r =>
-                          new FieldsRow
-                          {
-                            ItemID = r.ItemID,
-                            Language = r.Language,
-                            Version = version.ToInt32(),
-                            FieldID = r.FieldID,
-                            Value = r.Value
-                          });
+                rows.Select(
+                  r =>
+                    new FieldsRow
+                    {
+                      ItemID = r.ItemID,
+                      Language = r.Language,
+                      Version = version.ToInt32(),
+                      FieldID = r.FieldID,
+                      Value = r.Value
+                    });
 
-              foreach (FieldsRow row in rows)
+              foreach (var row in rows)
               {
                 Owner.VersionedFields[row.ItemID].Add(row);
               }

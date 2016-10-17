@@ -9,9 +9,9 @@ namespace Sitecore.Data.DataAccess
     public ItemInfoSet()
     {
     }
-                              
+
     public ItemInfoSet(params ItemInfo[] items) : base(items?.ToDictionary(x => x.ID, x => x) ?? new Dictionary<Guid, ItemInfo>())
-    { 
+    {
     }
   }
 }

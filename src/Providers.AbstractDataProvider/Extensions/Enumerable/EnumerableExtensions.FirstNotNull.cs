@@ -5,8 +5,8 @@
 
   public static partial class EnumerableExtensions
   {
-    public static TR FirstNotNull<T, TR>(this IEnumerable<T> enumerable, Func<T, TR> func) where TR: class
-    {                                            
+    public static TR FirstNotNull<T, TR>(this IEnumerable<T> enumerable, Func<T, TR> func) where TR : class
+    {
       foreach (var obj in enumerable)
       {
         var result = func(obj);

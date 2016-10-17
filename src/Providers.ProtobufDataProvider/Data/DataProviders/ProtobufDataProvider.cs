@@ -5,22 +5,21 @@
   using System.IO;
   using System.Linq;
   using System.Text.RegularExpressions;
+  using Sitecore.Collections;
   using Sitecore.Data.DataAccess;
   using Sitecore.Data.DataFormat;
-  using Sitecore;
-  using Sitecore.Extensions.Enumerable;
-  using Sitecore.Collections;
-  using Sitecore.Data;
   using Sitecore.Diagnostics;
   using Sitecore.Exceptions;
   using Sitecore.Globalization;
 
   public class ProtobufDataProvider : DataProvider
   {
-    private readonly DataSet DataSet;
+    private static readonly Regex DescendantsQueryRegex = new Regex(@"^fast\://\*(\[[^\]])$", RegexOptions.Compiled);
 
     [NotNull]
     private readonly string DatabaseName;
+
+    private readonly DataSet DataSet;
 
     [UsedImplicitly]
     public ProtobufDataProvider([NotNull] string databaseName, [NotNull] string definitionsFilePath, [NotNull] string sharedDataFilePath, [NotNull] string languageDataFilePath)
@@ -29,7 +28,7 @@
       Assert.ArgumentNotNullOrEmpty(definitionsFilePath, nameof(definitionsFilePath));
       Assert.ArgumentNotNullOrEmpty(sharedDataFilePath, nameof(sharedDataFilePath));
       Assert.ArgumentNotNullOrEmpty(languageDataFilePath, nameof(languageDataFilePath));
-                 
+
       DatabaseName = databaseName;
       DataSet = new DataSet(new FileInfo(MainUtil.MapPath(definitionsFilePath)), new FileInfo(MainUtil.MapPath(sharedDataFilePath)), new FileInfo(MainUtil.MapPath(languageDataFilePath)));
     }
@@ -60,7 +59,7 @@
         return list;
       }
 
-      for (int i = 0; i < array.Length; i++)
+      for (var i = 0; i < array.Length; i++)
       {
         var item = array[i];
         list.Add(ID.Parse(item.ID));
@@ -96,7 +95,7 @@
       foreach (var lang in item.Keys)
       {
         // in read-only data provider only single "1" version per language is supported
-        list.Add(Language.Parse(lang), Sitecore.Data.Version.Parse(1));
+        list.Add(Language.Parse(lang), Data.Version.Parse(1));
       }
 
       context.Abort();
@@ -115,8 +114,8 @@
 
       DataSet.SharedData.TryGetValue(itemDefinition.ID.Guid)?
         .ToList()
-        .ForEach(sharedField => 
-          list.Add(ID.Parse(sharedField.Key), sharedField.Value ?? string.Empty));
+        .ForEach(sharedField =>
+            list.Add(ID.Parse(sharedField.Key), sharedField.Value ?? string.Empty));
 
       var languages = DataSet.LanguageData.TryGetValue(itemDefinition.ID.Guid);
       if (languages != null)
@@ -130,8 +129,8 @@
 
           pair.Value?
             .ToList()
-            .ForEach(languageField => 
-              list.Add(ID.Parse(languageField.Key), languageField.Value ?? string.Empty));
+            .ForEach(languageField =>
+                list.Add(ID.Parse(languageField.Key), languageField.Value ?? string.Empty));
 
           break;
         }
@@ -163,9 +162,7 @@
       Log.Info($"SelectSingleID: {query}, Value: {result}", this);
       context.Abort();
       return result;
-    }                             
-
-    private static readonly Regex DescendantsQueryRegex = new Regex(@"^fast\://\*(\[[^\]])$", RegexOptions.Compiled);
+    }
 
     public override IDList SelectIDs(string query, CallContext context)
     {
@@ -190,7 +187,9 @@
         {
           var conditionsQuery = conditionsQueryGroup.Value;
           if (string.IsNullOrEmpty(conditionsQuery))
+          {
             throw new QueryException("Query must not contain empty square bracets []");
+          }
 
           var conditions = conditionsQuery.Split(" and ");
           foreach (var condition in conditions)
@@ -228,7 +227,7 @@
     {
       ItemInfo[] children;
 
-      return DataSet.Children.TryGetValue(itemDefinition.ID.Guid, out children) && children != null && children.Length > 0;
+      return DataSet.Children.TryGetValue(itemDefinition.ID.Guid, out children) && (children != null) && (children.Length > 0);
     }
 
     public override IdCollection GetTemplateItemIds(CallContext context)
@@ -246,10 +245,10 @@
 
     public override LanguageCollection GetLanguages(CallContext context)
     {
-      var languages = DataSet.Children[Data.ItemIDs.LanguagesRootId]?
-        .Select(x => x?.Name)
-        .Where(x => !string.IsNullOrEmpty(x))
-        .Select(x => Language.Parse(x)) ?? new Language[0];
+      var languages = DataSet.Children[ItemIDs.LanguagesRootId]?
+                        .Select(x => x?.Name)
+                        .Where(x => !string.IsNullOrEmpty(x))
+                        .Select(x => Language.Parse(x)) ?? new Language[0];
 
       context.Abort();
       return new LanguageCollection(languages);

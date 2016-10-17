@@ -2,7 +2,6 @@
 {
   using System.Collections.Generic;
   using System.Linq;
-  using Sitecore;
   using Sitecore.Diagnostics;
 
   public sealed partial class CompositeDataProvider : DataProvider
@@ -20,7 +19,7 @@
     {
       Assert.ArgumentNotNull(providers, nameof(providers));
 
-      _Providers = providers.ToList();           
+      _Providers = providers.ToList();
     }
 
     [NotNull]
@@ -37,6 +36,6 @@
 
         _Providers.Add(dataProvider);
       }
-    }              
-  }                                                   
+    }
+  }
 }

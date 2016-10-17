@@ -2,10 +2,10 @@ namespace Sitecore.Data.DataAccess
 {
   using System;
   using System.IO;
-  using Sitecore.Data.DataFormat;
   using ProtoBuf;
+  using Sitecore.Data.DataFormat;
 
-  public class LanguageDataSet 
+  public class LanguageDataSet
   {
     public readonly ItemsLanguagesData ItemsLanguageFields;
 

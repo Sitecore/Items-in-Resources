@@ -2,9 +2,7 @@
 {
   using System.Linq;
   using Sitecore.Collections;
-  using Sitecore.Data;
   using Sitecore.Data.Items;
-  using Sitecore.Extensions;
   using Sitecore.Extensions.Enumerable;
   using Sitecore.Globalization;
 
@@ -15,7 +13,7 @@
     public override FieldList GetItemFields(ItemDefinition itemDefinition, VersionUri versionUri, CallContext context)
     {
       return Providers.FirstNotNull(x => x.GetItemFields(itemDefinition, versionUri, context));
-    }          
+    }
 
     public override VersionUriList GetItemVersions(ItemDefinition itemDefinition, CallContext context)
     {

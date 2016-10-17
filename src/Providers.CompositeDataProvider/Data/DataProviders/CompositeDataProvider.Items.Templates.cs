@@ -2,9 +2,7 @@
 {
   using System.Linq;
   using Sitecore.Collections;
-  using Sitecore.Data;
   using Sitecore.Data.Templates;
-  using Sitecore.Extensions;
   using Sitecore.Extensions.Enumerable;
 
   public partial class CompositeDataProvider
@@ -29,6 +27,6 @@
     public override bool ChangeFieldSharing(TemplateField fieldDefinition, TemplateFieldSharing sharing, CallContext context)
     {
       return Providers.Any(x => x.ChangeFieldSharing(fieldDefinition, sharing, context));
-    }           
+    }
   }
 }

@@ -7,13 +7,7 @@
   public class ProtobufWrap<T>
   {
     [ProtoMember(1)]
-    public T Data
-    {
-      [UsedImplicitly]
-      get;
-
-      set;
-    }
+    public T Data { [UsedImplicitly] get; set; }
   }
 
   public static class ProtobufWrap

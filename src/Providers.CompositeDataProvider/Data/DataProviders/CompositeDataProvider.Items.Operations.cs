@@ -2,7 +2,6 @@
 {
   using System;
   using System.Linq;
-  using Sitecore.Data;
 
   public partial class CompositeDataProvider
   {
@@ -26,7 +25,7 @@
     public override bool MoveItem(ItemDefinition itemDefinition, ItemDefinition destination, CallContext context)
     {
       return Providers.Any(x => x.MoveItem(itemDefinition, destination, context));
-    }         
+    }
 
     public override bool DeleteItem(ItemDefinition itemDefinition, CallContext context)
     {

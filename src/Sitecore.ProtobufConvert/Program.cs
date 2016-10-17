@@ -1,10 +1,12 @@
 ﻿namespace ProtobufConvert
 {
+  using Fclp;
+
   public static class Program
-  {                    
+  {
     public static void Main(string[] args)
     {
-      var parser = new Fclp.FluentCommandLineParser<ConvertCommand>();
+      var parser = new FluentCommandLineParser<ConvertCommand>();
 
       parser.Setup(x => x.ConnectionString)
         .As('c', "connectionString")
@@ -15,17 +17,17 @@
         .Required();
 
       parser.Setup(x => x.OutputDirectory)
-        .As('o', "outputDirectory")        
-        .Required();                     
+        .As('o', "outputDirectory")
+        .Required();
 
       var result = parser.Parse(args);
 
       if (!result.HasErrors)
       {
-        var command = parser.Object;   
-                                  
+        var command = parser.Object;
+
         command.Execute();
       }
     }
-  }      
+  }
 }

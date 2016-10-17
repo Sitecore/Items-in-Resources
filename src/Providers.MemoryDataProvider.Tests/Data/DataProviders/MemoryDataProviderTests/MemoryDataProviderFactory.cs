@@ -3,10 +3,10 @@
   using Sitecore.Data.DataProviders.AbstractDataProviderTests;
 
   public static class MemoryDataProviderFactory
+  {
+    public static ProviderTraits CreateTraits()
     {
-        public static ProviderTraits CreateTraits()
-        {
-            return new MemoryProviderTraits();
-        }
+      return new MemoryProviderTraits();
     }
+  }
 }

@@ -5,8 +5,8 @@
 
   public static partial class EnumerableExtensions
   {
-    public static int FirstPositive<T>(this IEnumerable<T> enumerable, Func<T, int> func, int otherwise) 
-    {                 
+    public static int FirstPositive<T>(this IEnumerable<T> enumerable, Func<T, int> func, int otherwise)
+    {
       foreach (var obj in enumerable)
       {
         var result = func(obj);

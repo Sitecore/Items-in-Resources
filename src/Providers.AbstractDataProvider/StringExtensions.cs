@@ -24,7 +24,7 @@
         }
       }
 
-      if (allowEmptyOutput || prevPosPlusDelim < that.Length)
+      if (allowEmptyOutput || (prevPosPlusDelim < that.Length))
       {
         yield return that.Substring(prevPosPlusDelim);
       }
