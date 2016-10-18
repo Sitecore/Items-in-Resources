@@ -1,6 +1,8 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using System;
+  using System.Linq;
+  using Sitecore.Extensions.Enumerable;
 
   public partial class CompositeDataProvider
   {
@@ -62,12 +64,36 @@
 
     public override bool DeleteItem(ItemDefinition itemDefinition, CallContext context)
     {
-      if (HeadProvider.DeleteItem(itemDefinition, context))
+      // check if already deleted in head
+      var headParentId = HeadProvider.GetParentID(itemDefinition, context);
+      if (headParentId == ID.Undefined)
       {
         return true;
       }
 
-      return CreateItem(itemDefinition.ID, itemDefinition.Name, itemDefinition.TemplateID, new ItemDefinition(ID.Undefined, "undefined", ID.Null, ID.Null), context);
+      var itemId = itemDefinition.ID;
+      if (ReadOnlyProviders.FirstNotNull(x => x.GetItemDefinition(itemId)) == null)
+      {
+        // item may only exist in head provider
+        // so we can simply delete it 
+
+        return HeadProvider.DeleteItem(itemDefinition, context);
+      }
+
+      if (HeadProvider.GetItemDefinition(itemId, context) != null)
+      {
+        // item exists both in read-only data provider and in HEAD
+        // so we first delete it in HEAD
+
+        HeadProvider.DeleteItem(itemDefinition, context);
+
+        // and pretend it was only in read-only data provider
+      }
+
+      // item only exists in read-only data provider 
+      // so we create item definition beneath undefied parent
+
+      return CreateItem(itemId, itemDefinition.Name, itemDefinition.TemplateID, new ItemDefinition(ID.Undefined, "undefined", ID.Null, ID.Null), context);
     }
   }
 }
