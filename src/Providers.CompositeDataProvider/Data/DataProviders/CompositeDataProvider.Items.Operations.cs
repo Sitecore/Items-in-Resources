@@ -1,8 +1,6 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using System;
-  using System.Linq;
-  using Sitecore.Data.Items;
 
   public partial class CompositeDataProvider
   {

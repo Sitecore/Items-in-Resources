@@ -2,14 +2,20 @@ namespace Sitecore.Data.DataAccess
 {
   using System.IO;
   using ProtoBuf;
+  using Sitecore.Diagnostics;
 
   public class DataSet
   {
+    [NotNull]
     public readonly ChildrenDataSet Children;
+
+    [NotNull]
     public readonly ItemInfoSet ItemInfo;
 
+    [NotNull]
     public readonly LanguageDataSet LanguageData;
 
+    [NotNull]
     public readonly SharedDataSet SharedData;
 
     public DataSet(FileInfo definitions, FileInfo sharedData, FileInfo languageData) : this(OpenDefinitions(definitions), OpenSharedData(sharedData), OpenLanguageData(languageData))
@@ -20,7 +26,10 @@ namespace Sitecore.Data.DataAccess
     {
       using (definitions)
       {
-        ItemInfo = Serializer.Deserialize<ItemInfoSet>(definitions);
+        var info = Serializer.Deserialize<ItemInfoSet>(definitions);
+        Assert.IsNotNull(info, nameof(info));
+
+        ItemInfo = info;
       }
 
       Children = new ChildrenDataSet(ItemInfo);

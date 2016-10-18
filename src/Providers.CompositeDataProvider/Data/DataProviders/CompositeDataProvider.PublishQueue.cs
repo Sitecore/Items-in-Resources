@@ -2,9 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
-  using System.Linq;
   using Sitecore.Collections;
-  using Sitecore.Extensions.Enumerable;
   using Sitecore.Publishing.Pipelines.Publish;
 
   public partial class CompositeDataProvider

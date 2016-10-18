@@ -3,7 +3,6 @@
   using System.Collections.Generic;
   using System.Linq;
   using Sitecore.Collections;
-  using Sitecore.Extensions.Enumerable;
   using Sitecore.Globalization;
 
   public partial class CompositeDataProvider

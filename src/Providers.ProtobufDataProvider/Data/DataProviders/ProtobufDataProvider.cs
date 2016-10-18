@@ -10,7 +10,6 @@
   using Sitecore.Data.DataFormat;
   using Sitecore.Diagnostics;
   using Sitecore.Exceptions;
-  using Sitecore.Extensions.Enumerable;
   using Sitecore.Globalization;
 
   public class ProtobufDataProvider : ReadOnlyDataProvider
