@@ -34,8 +34,15 @@ namespace Sitecore.Data.DataAccess
 
       Children = new ChildrenDataSet(ItemInfo);
 
-      SharedData = new SharedDataSet(sharedData);
-      LanguageData = new LanguageDataSet(languageData);
+      using (sharedData)
+      {
+        SharedData = new SharedDataSet(sharedData);
+      }
+
+      using (languageData)
+      {
+        LanguageData = new LanguageDataSet(languageData);
+      }
     }
 
     private static Stream OpenDefinitions(FileInfo file)
