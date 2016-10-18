@@ -38,8 +38,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\DataProviders\AbstractCompositeDataProvider.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.cs" />
-    <Compile Include="Data\DataProviders\CompositeDataProvider.EventQueue.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.Items.ItemData.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.Items.ItemTree.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.Items.Languages.cs" />
