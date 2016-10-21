@@ -16,7 +16,7 @@ parts of content tree in separate locations such as SQL Server database and read
 2. Select the installed instance and click `Ribbon -> Home -> Bundled Tools -> Generate NuGets for selected instance`
 3. Open solution in Visual Studio 
 4. Use Visual Studio deploy to deploy Website to the installed instance 
-5. Delete the contents of the `Items`, `SharedFields`, `UnversionedFields`, `VersionedFields` tables of **core** and **master** databases
+5. Delete the contents of the `Items`, `SharedFields`, `UnversionedFields`, `VersionedFields` tables of **core**, **master** and **web** databases
 
 ### Usage
 
