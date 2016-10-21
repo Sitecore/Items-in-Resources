@@ -54,9 +54,15 @@
         .GroupBy(x => x.Guid).Select(x => x.First()); // .Distinct()
 
       // deleted or moved out items must be get off the list
-      var filteredIds = childIDs.Where(x => HeadProvider.GetParentID(new ItemDefinition(x, string.Empty, ID.Null, ID.Null), context) == itemDefinition.ID);
-
-      return filteredIds;
+      var itemId = itemDefinition.ID;
+      foreach (var childID in childIDs)
+      {
+        var parentId = HeadProvider.GetParentID(new ItemDefinition(childID, string.Empty, ID.Null, ID.Null), context);
+        if (ReferenceEquals(parentId, null) || parentId == itemId)
+        {
+          yield return childID;
+        }
+      }
     }
 
     public override ID ResolvePath(string itemPath, CallContext context)
