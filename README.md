@@ -1,0 +1,23 @@
+# Items-in-Resources
+
+## Alpha-1
+
+This project aims to extend Sitecore implementation of data provider to make it support storing different 
+parts of content tree in separate locations such as SQL Server database and read-only binary files.
+
+### Dependencies
+
+* Visual Studio 2015 due to C# 6 features
+* Sitecore Instance Manager 1.4.0.481 (available in [QA branch](http://dl.sitecore.net/updater/qa/sim) only on 21-Oct-16) due to dependency on SC.* nugets
+
+### Deployment
+
+1. Install Sitecore 8.1 Update-3 (e.g. using SIM)
+2. Use Visual Studio deploy to deploy Website to the installed instance 
+3. Delete the contents of the `Items`, `SharedFields`, `UnversionedFields`, `VersionedFields` tables of **core** and **master** databases
+
+### Usage
+
+After deployment Sitecore is ready to use, all the default Sitecore items are in the place. Everything is supported excepting:  
+* **not supported** some operations with default Sitecore items (edit, move, copy, duplicate), but **deleting is supported** 
+* **not supported** fast query and sitecore query
