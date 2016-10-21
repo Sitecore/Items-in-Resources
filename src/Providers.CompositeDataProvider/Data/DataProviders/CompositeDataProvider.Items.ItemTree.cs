@@ -82,8 +82,13 @@
         // ResolvePath may return ID of the closest ancestor e.g. /sitecore/content's ID when /sitecore/content/home is missing
         // so here we check this situation 
         if (!path.Equals(itemPath, StringComparison.OrdinalIgnoreCase))
-        {
-          throw new NotImplementedException();
+        {                   
+          itemPath = itemPath.TrimEnd(" /".ToCharArray());
+          path = path.TrimEnd(" /".ToCharArray());
+          if (!path.Equals(itemPath, StringComparison.OrdinalIgnoreCase))
+          {
+            throw new NotImplementedException(itemPath + " != " + path);
+          }
         }
 
         // The item may be moved or deleted in the HeadProvider so we check that before returning id
