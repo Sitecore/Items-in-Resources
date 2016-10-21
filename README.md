@@ -5,7 +5,7 @@
 This project aims to extend Sitecore implementation of data provider to make it support storing different 
 parts of content tree in separate locations such as SQL Server database and read-only binary files.
 
-### Dependencies
+### Tools
 
 * Visual Studio 2015 due to C# 6 features
 * Sitecore Instance Manager 1.4.0.481 (available in [QA branch](http://dl.sitecore.net/updater/qa/sim) only on 21-Oct-16) due to dependency on SC.* nugets
