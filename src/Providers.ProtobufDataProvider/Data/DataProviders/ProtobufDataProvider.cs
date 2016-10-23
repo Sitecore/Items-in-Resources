@@ -228,7 +228,13 @@
     [NotNull]
     public override IEnumerable<Language> GetLanguages()
     {
-      var languages = DataSet.Children[ItemIDs.LanguagesRootId]?
+      ItemInfo[] languageList;
+      if (!this.DataSet.Children.TryGetValue(ItemIDs.LanguagesRootId, out languageList))
+      {
+        return new Language[0];
+      }
+
+      var languages = languageList?
         .Select(x => x?.Name)
         .Where(x => !string.IsNullOrEmpty(x))
         .Select(x => Language.Parse(x));
