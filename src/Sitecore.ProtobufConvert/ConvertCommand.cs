@@ -40,25 +40,9 @@
             var itemsLanguagesData = new ItemsLanguagesData();
 
             var context = ItemManager.Initialize(ConnectionString);
-            var queue = new Queue<Item>();
-            queue.Enqueue(context.GetItems().First(x => x.ID == ItemIDs.RootItemID));
-            while (queue.Count > 0)
-            {
-              var item = queue.Dequeue();
 
-              // enqueue children        
-              var parentId = item.ID;
-              var children = context.GetItems()
-                .Where(x => x.ParentID == parentId)
-                .ToArray()
-                .OrderBy(x => x.ID)
-                .ToArray();
-
-              foreach (var child in children)
-              {
-                queue.Enqueue(child);
-              }
-
+            foreach (var item in GetItems(context))
+            { 
               // definition
               AddDefinition(item, definitions);
 
@@ -74,6 +58,37 @@
             Serializer.Serialize(languageDataWriter, ProtobufWrap.Create(itemsLanguagesData));
           }
         }
+      }
+    }
+
+    private IEnumerable<Item> GetItems(ItemContext context)
+    {
+      var root = context.GetItems().FirstOrDefault(i => i.ID == ItemIDs.RootItemID);
+      if (root != null)
+      {
+        return this.EnumerateTree(context, root);
+      }
+      return context.GetItems();
+    }
+
+    private IEnumerable<Item> EnumerateTree(ItemContext context, Item root)
+    {
+      var queue = new Queue<Item>();
+      queue.Enqueue(root);
+      while (queue.Count > 0)
+      {
+        var item = queue.Dequeue();
+        var children = context.GetItems()
+          .Where(x => x.ParentID == item.ID)
+          .ToArray()
+          .OrderBy(x => x.ID)
+          .ToArray();
+        foreach (var child in children)
+        {
+          queue.Enqueue(child);
+        }
+
+        yield return item;
       }
     }
 
