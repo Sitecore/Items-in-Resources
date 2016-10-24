@@ -1,5 +1,7 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
+  using System.Collections.Generic;
+  using System.Linq;
   using Sitecore.Collections;
   using Sitecore.Data.Items;
   using Sitecore.Extensions.Enumerable;
@@ -19,10 +21,11 @@
     {
       var headList = HeadProvider.GetItemVersions(itemDefinition, context);
 
-      return 
-        headList != null && headList.Count > 0 
-        ? headList 
-        : ReadOnlyProviders.FirstNotNull(x => x.GetItemVersions(itemDefinition));
+      if (headList != null && headList.Count > 0) return headList;
+
+      return
+        this.ReadOnlyProviders.Select(provider => provider.GetItemVersions(itemDefinition))
+          .FirstOrDefault(list => list != null && list.Count > 0) ?? new VersionUriList();
     }
 
     public override bool SaveItem(ItemDefinition itemDefinition, ItemChanges changes, CallContext context)
