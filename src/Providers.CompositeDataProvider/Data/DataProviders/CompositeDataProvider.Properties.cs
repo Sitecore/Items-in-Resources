@@ -1,5 +1,6 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
+  using Sitecore.Eventing;
   using System.Collections.Generic;
 
   public partial class CompositeDataProvider
@@ -24,6 +25,11 @@
     public override bool RemoveProperty(string name, bool isPrefix, CallContext context)
     {
       return HeadProvider.RemoveProperty(name, isPrefix, context);
+    }
+
+    protected override EventQueue DoGetEventQueue()
+    {
+      return HeadProvider.GetEventQueue();
     }
   }
 }
