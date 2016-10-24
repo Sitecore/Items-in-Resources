@@ -34,7 +34,7 @@
       if (itemPath.Length == "/sitecore".Length)
       {
         id = ItemIDs.RootItemID;
-        return true;
+        return childrenDataSet.ContainsKey(ItemIDs.RootItemID);
       }
 
       if (itemPath["/sitecore".Length] != '/')
