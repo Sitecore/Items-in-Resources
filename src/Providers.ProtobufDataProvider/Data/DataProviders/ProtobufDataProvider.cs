@@ -106,12 +106,17 @@
     {
       // TODO: change signature to create FieldList once per all data providers
 
-      var list = new FieldList();
       if (versionUri.Version.Number > 1)
       {
         return null;
       }
 
+      if (!DataSet.ItemInfo.ContainsKey(itemDefinition.ID.Guid))
+      {
+        return null;
+      }
+
+      var list = new FieldList();
       DataSet.SharedData.TryGetValue(itemDefinition.ID.Guid)?
         .ToList()
         .ForEach(sharedField =>
