@@ -6,22 +6,13 @@
   using Sitecore.Collections;
   using Sitecore.Data.Items;
   using Sitecore.Data.Templates;
-  using Sitecore.Eventing;
   using Sitecore.Globalization;      
   using Sitecore.Publishing.Pipelines.Publish;
   using Sitecore.Workflows;
 
   public abstract partial class ReadOnlyDataProvider
   {
-    private const string MustNotBeCalled = "This method must not be called";
-
-    private const string UseAnotherOverload = "This method must not be called";
-
-    [Obsolete(MustNotBeCalled)]
-    public sealed override EventQueue GetEventQueue()
-    {
-      throw new NotSupportedException(MustNotBeCalled);
-    }
+    private const string UseAnotherOverload = "This method must not be called";    
 
     [Obsolete(MustNotBeCalled)]
     public sealed override bool CreateItem(ID itemID, string itemName, ID templateID, ItemDefinition parent, CallContext context)

@@ -4,12 +4,12 @@
 
   public abstract partial class AbstractDataProvider
   {
-    private const string MustNotBeCalledDirectly = "This method must not be called directly";
+    protected const string MustNotBeCalled = "This method must not be called directly";
 
-    [Obsolete(MustNotBeCalledDirectly)]
+    [Obsolete(MustNotBeCalled)]
     public sealed override CacheOptions CacheOptions => base.CacheOptions;
 
-    [Obsolete(MustNotBeCalledDirectly)]
+    [Obsolete(MustNotBeCalled)]
     protected sealed override string Disable
     {
       set
@@ -18,7 +18,7 @@
       }
     }
 
-    [Obsolete(MustNotBeCalledDirectly)]
+    [Obsolete(MustNotBeCalled)]
     protected sealed override string DisableGroup
     {
       set
@@ -27,7 +27,7 @@
       }
     }
 
-    [Obsolete(MustNotBeCalledDirectly)]
+    [Obsolete(MustNotBeCalled)]
     protected sealed override string Enable
     {
       set
@@ -36,7 +36,7 @@
       }
     }
 
-    [Obsolete(MustNotBeCalledDirectly)]
+    [Obsolete(MustNotBeCalled)]
     protected sealed override string EnableGroup
     {
       set
