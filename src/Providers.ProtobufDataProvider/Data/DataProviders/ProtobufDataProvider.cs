@@ -10,6 +10,7 @@
   using Sitecore.Data.DataFormat;
   using Sitecore.Diagnostics;
   using Sitecore.Exceptions;
+  using Sitecore.Extensions.Dictionary;
   using Sitecore.Globalization;
 
   public class ProtobufDataProvider : ReadOnlyDataProvider
@@ -35,10 +36,10 @@
 
     public override ItemDefinition GetItemDefinition(ID itemId)
     {
-      Assert.ArgumentNotNull(itemId, nameof(itemId));     
+      Assert.ArgumentNotNull(itemId, nameof(itemId));
 
-      ItemInfo item;
-      if (!DataSet.ItemInfo.TryGetValue(itemId.Guid, out item))
+      ItemInfo item = DataSet.ItemInfo.TryGetValue(itemId.Guid);
+      if (item == null)
       {
         return null;
       }
@@ -48,8 +49,8 @@
 
     public override string GetItemPath(ID itemId)
     {
-      ItemInfo item;
-      if (!DataSet.ItemInfo.TryGetValue(itemId.Guid, out item))
+      var item = DataSet.ItemInfo.TryGetValue(itemId.Guid);
+      if (item == null)
       {
         return null;
       }
@@ -61,9 +62,8 @@
     {
       // TODO: change signature to create IDList once per all data providers
 
-      var list = new IDList();
-      ItemInfo[] array;
-      if (!DataSet.Children.TryGetValue(itemDefinition.ID.Guid, out array))
+      var array = DataSet.Children.TryGetValue(itemDefinition.ID.Guid);
+      if (array == null)
       {
         return null;
       }
@@ -73,8 +73,8 @@
 
     public override ID GetParentID(ItemDefinition itemDefinition)
     {
-      ItemInfo item;
-      if (!DataSet.ItemInfo.TryGetValue(itemDefinition.ID.Guid, out item))
+      var item = DataSet.ItemInfo.TryGetValue(itemDefinition.ID.Guid);
+      if (item == null)
       {
         return null;
       }
@@ -87,8 +87,8 @@
       // TODO: change signature to create FieldList once per all data providers
       var list = new VersionUriList();
 
-      ItemLanguagesData item;
-      if (!DataSet.LanguageData.TryGetValue(itemDefinition.ID.Guid, out item))
+      var item = DataSet.LanguageData.TryGetValue(itemDefinition.ID.Guid);
+      if (item == null)
       {
         return list;
       }
@@ -233,8 +233,8 @@
     [NotNull]
     public override IEnumerable<Language> GetLanguages()
     {
-      ItemInfo[] languageList;
-      if (!this.DataSet.Children.TryGetValue(ItemIDs.LanguagesRootId, out languageList))
+      var languageList = this.DataSet.Children.TryGetValue(ItemIDs.LanguagesRootId);
+      if (languageList != null)
       {
         return new Language[0];
       }

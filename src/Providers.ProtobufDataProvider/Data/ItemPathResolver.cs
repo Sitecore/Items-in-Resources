@@ -2,6 +2,7 @@
 {
   using System;
   using Sitecore.Data.DataAccess;
+  using Sitecore.Extensions.Dictionary;
 
   public static class ItemPathResolver
   {
@@ -62,8 +63,8 @@
         throw new ArgumentException($"itemPath must not contain double-slashes // (actual: {path})");
       }
 
-      ItemInfo[] children;
-      if (!childrenDataSet.TryGetValue(id, out children) || (children == null))
+      var children = childrenDataSet.TryGetValue(id);
+      if (children == null)
       {
         return false;
       }
