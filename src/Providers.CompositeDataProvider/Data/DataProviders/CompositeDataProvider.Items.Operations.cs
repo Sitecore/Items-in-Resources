@@ -1,8 +1,10 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using System;
-  using System.Linq;
+  using System.Collections.Generic;
+  using Sitecore.Data.Items;
   using Sitecore.Extensions.Enumerable;
+  using Sitecore.Extensions.Object;
 
   public partial class CompositeDataProvider
   {
@@ -10,12 +12,67 @@
 
     public override bool CreateItem(ID itemID, string itemName, ID templateID, ItemDefinition parent, DateTime created, CallContext context)
     {
-      return HeadProvider.CreateItem(itemID, itemName, templateID, parent, created, context);
+      var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, created, context);
+
+      this.Trace(isCreated, 0, itemID, itemName, templateID, parent.ID, created, context.DataManager.Database.Name);
+
+      return isCreated;
     }
 
     public override bool CreateItem(ID itemID, string itemName, ID templateID, ItemDefinition parent, CallContext context)
     {
-      return HeadProvider.CreateItem(itemID, itemName, templateID, parent, context);
+      var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, context);
+
+      this.Trace(isCreated, 0, itemID, itemName, templateID, parent.ID, context.DataManager.Database.Name);
+
+      return isCreated;
+    }
+
+    public override bool SaveItem(ItemDefinition itemDefinition, ItemChanges changes, CallContext context)
+    {
+      if (HeadProvider.GetItemDefinition(itemDefinition.ID, new CallContext(context.DataManager, 1)) != null)
+      {
+        var isSaved = HeadProvider.SaveItem(itemDefinition, changes, context);
+
+        this.Trace(isSaved, 0, itemDefinition.ID, context.DataManager.Database.Name);
+        
+        return isSaved;
+      }
+
+      var parentId = GetParentID(itemDefinition, context);
+      var parentItem = GetItemDefinition(parentId, context);
+
+      if (
+        !HeadProvider.CreateItem(
+          itemDefinition.ID,
+          itemDefinition.Name,
+          itemDefinition.TemplateID,
+          parentItem,
+          itemDefinition.Created,
+          context))
+      {             
+        this.Trace(false, 0, itemDefinition.ID, context.DataManager.Database.Name);
+
+        return false;
+      }
+
+      foreach (VersionUri version in GetItemVersions(itemDefinition, context))
+      {
+        var versionFields = this.GetItemFields(itemDefinition, version, context);
+        var versionCopy = new ItemChanges(changes.Item);
+        foreach (KeyValuePair<ID, string> pair in versionFields)
+        {
+          versionCopy.SetFieldValue(versionCopy.Item.Fields[pair.Key], pair.Value);
+        }
+
+        HeadProvider.SaveItem(itemDefinition, versionCopy, context);
+      }
+
+      var saved = HeadProvider.SaveItem(itemDefinition, changes, context);
+
+      this.Trace(saved, 0, itemDefinition.ID, context.DataManager.Database.Name);
+                   
+      return saved;
     }
 
     public override bool CopyItem(ItemDefinition source, ItemDefinition destination, string copyName, ID copyID, CallContext context)
@@ -23,6 +80,8 @@
       // source item is in head provider
       if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
       {
+        this.Trace(true, 0, source.ID, destination.ID, copyName, copyID, context.DataManager.Database.Name);
+
         return true;
       }
 
@@ -56,6 +115,8 @@
     {
       if (HeadProvider.MoveItem(itemDefinition, destination, context))
       {
+        this.Trace(true, 0, itemDefinition.ID, destination.ID, context.DataManager.Database.Name);
+
         return true;
       }
 
@@ -68,6 +129,8 @@
       var headParentId = HeadProvider.GetParentID(itemDefinition, context);
       if (headParentId == ID.Undefined)
       {
+        this.Trace(true, 0, itemDefinition.ID, context.DataManager.Database.Name);
+
         return true;
       }
 
@@ -77,7 +140,11 @@
         // item may only exist in head provider
         // so we can simply delete it 
 
-        return HeadProvider.DeleteItem(itemDefinition, context);
+        var deleted = HeadProvider.DeleteItem(itemDefinition, context);
+
+        this.Trace(deleted, 0, itemDefinition.ID, context.DataManager.Database.Name);
+
+        return deleted;
       }
 
       if (HeadProvider.GetItemDefinition(itemId, context) != null)
@@ -93,7 +160,11 @@
       // item only exists in read-only data provider 
       // so we create item definition beneath undefied parent
 
-      return CreateItem(itemId, itemDefinition.Name, itemDefinition.TemplateID, new ItemDefinition(ID.Undefined, "undefined", ID.Null, ID.Null), context);
+      var deleted2 = CreateItem(itemId, itemDefinition.Name, itemDefinition.TemplateID, new ItemDefinition(ID.Undefined, "undefined", ID.Null, ID.Null), context);
+
+      this.Trace(deleted2, 0, itemDefinition.ID, context.DataManager.Database.Name);
+
+      return deleted2;
     }
   }
 }

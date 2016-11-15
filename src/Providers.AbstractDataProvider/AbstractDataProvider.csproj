@@ -43,6 +43,7 @@
     <Compile Include="Data\DataProviders\ReadOnlyDataProvider.NotSupported.cs" />
     <Compile Include="Data\DataProviders\ReadOnlyDataProvider.cs" />
     <Compile Include="Data\ItemIDs.cs" />
+    <Compile Include="Extensions\Object\ObjectExtensions.Trace.cs" />
     <Compile Include="Extensions\DataProvider\DataProviderExtensions.SetDatabase.cs" />
     <Compile Include="Extensions\Enumerable\EnumerableExtensions.FirstNotNull.cs" />
     <Compile Include="Extensions\Enumerable\EnumerableExtensions.ForEach.cs" />
@@ -52,6 +53,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Diagnostics\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

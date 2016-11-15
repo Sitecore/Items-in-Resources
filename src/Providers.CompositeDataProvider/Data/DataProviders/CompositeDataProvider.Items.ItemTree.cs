@@ -5,6 +5,7 @@
   using System.Linq;
   using Sitecore.Collections;
   using Sitecore.Extensions.Enumerable;
+  using Sitecore.Extensions.Object;
 
   public partial class CompositeDataProvider
   {
@@ -12,20 +13,32 @@
 
     public override ItemDefinition GetItemDefinition(ID itemId, CallContext context)
     {
-      return HeadProvider.GetItemDefinition(itemId, context)
+      var definition = HeadProvider.GetItemDefinition(itemId, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetItemDefinition(itemId));
+
+      this.Trace(definition, 0, itemId, context.DataManager.Database.Name);
+
+      return definition;
     }
 
     public override ID GetParentID(ItemDefinition itemDefinition, CallContext context)
     {
-      return HeadProvider.GetParentID(itemDefinition, context)
+      var parentId = HeadProvider.GetParentID(itemDefinition, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetParentID(itemDefinition));
+
+      this.Trace(parentId, 0, itemDefinition.ID, context.DataManager.Database.Name);
+
+      return parentId;
     }
 
     public override bool HasChildren(ItemDefinition itemDefinition, CallContext context)
     {
-      return HeadProvider.HasChildren(itemDefinition, context) // speed optimization
+      var hasChildren = HeadProvider.HasChildren(itemDefinition, context) // speed optimization
         || DoGetChildIDs(itemDefinition, context).Any();
+      
+      this.Trace(hasChildren, 0, itemDefinition.ID, context.DataManager.Database.Name);
+
+      return hasChildren;
     }
 
     public override IDList GetChildIDs(ItemDefinition itemDefinition, CallContext context)
@@ -34,6 +47,8 @@
 
       DoGetChildIDs(itemDefinition, context)
          .ForEach(x => list.Add(ID.Parse(x)));
+
+      this.Trace(string.Join(", ", list), 0, itemDefinition.ID, context.DataManager.Database.Name);
 
       return list;
     }
@@ -66,10 +81,12 @@
     }
 
     public override ID ResolvePath(string itemPath, CallContext context)
-    {
+    {                                                            
       ID pathId;
       if (ID.TryParse(itemPath, out pathId))
       {
+        this.Trace(pathId, 0, itemPath, context.DataManager.Database.Name);
+
         return pathId;
       }
         
@@ -88,7 +105,7 @@
         // ResolvePath may return ID of the closest ancestor e.g. /sitecore/content's ID when /sitecore/content/home is missing
         // so here we check this situation 
         if (!path.Equals(itemPath, StringComparison.OrdinalIgnoreCase))
-        {                   
+        {          
           itemPath = itemPath.TrimEnd(" /".ToCharArray());
           path = path.TrimEnd(" /".ToCharArray());
           if (!path.Equals(itemPath, StringComparison.OrdinalIgnoreCase))
@@ -102,7 +119,10 @@
         if (itemDefinition == null)
         {
           // HeadProvider doesn't have anything for this item
-          // so just return id
+          // so just return id     
+
+          this.Trace(pathId, 0, itemPath, context.DataManager.Database.Name);
+
           return id;
         }
 
@@ -110,7 +130,7 @@
         var parentId = HeadProvider.GetParentID(itemDefinition, context);
         if (parentId == ID.Undefined)
         {
-          return null;
+          break;
         }
 
         // okay, not deleted - then check if it was moved
@@ -118,13 +138,18 @@
         if (readonlyParentId == parentId)
         {
           // not moved, it's okay
+
+          this.Trace(id, 0, itemPath, context.DataManager.Database.Name);
+
           return id;
         }
 
         // moved, return null
-        return null;
+        break;
       }
 
+      this.Trace(null, 0, itemPath, context.DataManager.Database.Name);
+                   
       return null;
 
       /*  
@@ -140,7 +165,7 @@
     }
 
     public override IDList SelectIDs(string query, CallContext context)
-    {
+    {                     
       var list = new IDList();
 
       ReadOnlyProviders
@@ -151,15 +176,21 @@
         .GroupBy(x => x).Select(x => x.First()) // .Distinct()
         .ForEach(x => list.Add(x));
 
+      this.Trace(list, 0, query, context.DataManager.Database.Name);
+
       return list;
     }
 
     public override ID SelectSingleID(string query, CallContext context)
     {
-      return ReadOnlyProviders.FirstNotNull(x => x
+      var id = ReadOnlyProviders.FirstNotNull(x => x
         .SelectIDs(query)?
         .Select(ID.Parse)
         .FirstOrDefault());
+      
+      this.Trace(id, 0, query, context.DataManager.Database.Name);
+
+      return id;
     }
   }
 }
