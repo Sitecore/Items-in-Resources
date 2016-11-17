@@ -51,6 +51,7 @@
     {
       return DataSet.Children
         .TryGetValue(parentId.Guid)?
+        .Where(x => x.Name.Equals(childName, StringComparison.OrdinalIgnoreCase))
         .Select(x => ID.Parse(x.ID));
     }
 
