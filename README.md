@@ -1,9 +1,26 @@
 # Items-in-Resources
 
-## Alpha-1
+## Alpha-1.1
 
 This project aims to extend Sitecore implementation of data provider to make it support storing different 
 parts of content tree in separate locations such as SQL Server database and read-only binary files.
+
+### Release Notes
+
+#### 0.0.1.1
+
+* Supports Sitecore 8.2
+* Default items are editable (they are saved to sql at first change)
+* Default items can be spreaded between several binary files
+* Querying sql items is supported (shorter than 600 nested items e.g. /sitecore/item1/item2/item3/.../item600, more lead to StackOverflowException)
+
+#### 0.0.1.0
+
+* Supports Sitecore 8.1
+* Default items are available read-only (but deletable). 
+* Querying sql items by full path is not supported (http://localhost/sitecore/content/home/new%20item.aspx leads to 404)
+* Copying and duplicating original items are not supported.
+* Only some of data provider caches are used
 
 ### Tools
 
