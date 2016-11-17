@@ -66,7 +66,7 @@
       var root = context.GetItems().FirstOrDefault(i => i.ID == ItemIDs.RootItemID);
       if (root != null)
       {
-        return this.EnumerateTree(context, root);
+        return EnumerateTree(context, root);
       }
       return context.GetItems();
     }
