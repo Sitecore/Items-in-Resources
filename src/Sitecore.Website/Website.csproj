@@ -113,6 +113,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="CleanupDatabases.sql" />
     <Content Include="packages.config" />
     <None Include="Properties\PublishProfiles\ir.pubxml" />
     <None Include="Web.config" />
