@@ -27,15 +27,17 @@
 
       return DoGetEventQueue();
     }
-
-
-    [Obsolete(MustNotBeCalled)]
+                                 
+    /// <summary>
+    /// Must not be called directly.
+    /// </summary>
     protected virtual void Initialize()
     { 
     }
 
-
-    [Obsolete(MustNotBeCalled)]
+    /// <summary>
+    /// Must not be called directly.
+    /// </summary>
     protected virtual EventQueue DoGetEventQueue()
     {
       return null;
