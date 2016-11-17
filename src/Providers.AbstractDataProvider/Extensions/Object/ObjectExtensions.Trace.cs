@@ -1,13 +1,17 @@
 ﻿namespace Sitecore.Extensions.Object
 {
+  using System.Collections;
   using System.Diagnostics;
+  using System.IO;
   using System.Linq;
   using Sitecore.Collections;
   using Sitecore.Data;
+  using Sitecore.Data.DataProviders;
   using Sitecore.Diagnostics;
+  using Sitecore.Globalization;
 
   public static class ObjectExtensions
-  {  
+  {
     [Conditional("DEBUG")]
     public static void Trace([NotNull] this object obj, [CanBeNull] object result, [CanBeNull] Stopwatch timer, [NotNull] params object[] arguments)
     {
@@ -20,12 +24,11 @@
       var sf = st.GetFrame(1);
       Assert.IsNotNull(sf, nameof(sf));
 
-      var timerText = timer != null ? $"run {timer.Elapsed}" : "";
-      var type = obj.GetType().FullName;
+      var type = obj.GetType().Name;
       var method = sf.GetMethod().Name;
       var argumentsText = string.Join(", ", arguments.Select(Print));
       var resultText = Print(result);
-      var message = $"Tracing call {timerText}\r\n{type}.{method}({argumentsText}) = {resultText}\r\n";
+      var message = $"Tracing {type}.{method} call\r\nArguments: ({argumentsText})\r\nResult: {resultText}\r\nTime spent: {timer?.Elapsed.TotalMilliseconds.ToString() ?? "unknown "}ms";
 
       Log.Info(message, typeof(ObjectExtensions));
     }
@@ -38,19 +41,74 @@
         return "null";
       }
 
-      var list = obj as IDList;    
+      var text = obj as string;
+      if (text != null)
+      {
+        return PrintValue(text);
+      }
+
+      var list = obj as IDList;
       if (list != null)
       {
-        return "\"" + string.Join(", ", list.Cast<object>().Select(Print).ToArray()) + "\"";
+        return PrintArray(list);
+      }
+
+      var enumerable = obj as IEnumerable;
+      if (enumerable != null)
+      {
+        return PrintArray(enumerable);
       }
 
       var itemDefinition = obj as ItemDefinition;
       if (itemDefinition != null)
       {
-        return "\"" + itemDefinition.ID + "\"";
+        var objId = itemDefinition.ID;
+        Assert.IsNotNull(objId, nameof(objId));
+
+        obj = objId;
       }
 
+      var callContext = obj as CallContext;
+      if (callContext != null)
+      {
+        var objDb = callContext.DataManager?.Database;
+        Assert.IsNotNull(objDb, nameof(objDb));
+
+        obj = objDb;
+      }              
+
+      var stream = obj as Stream;
+      if (stream != null)
+      {
+        var length = stream.Length;
+        Assert.IsNotNull(length, nameof(length));
+
+        obj = $"Stream, length: {length}";
+      }
+
+      var id = obj as ID;
+      if (id != (ID)null)
+      {
+        return PrintValue(id);
+      }
+
+      return PrintValue(obj);
+    }
+
+    [NotNull]
+    private static string PrintValue([NotNull] object obj)
+    {
+      Assert.ArgumentNotNull(obj, nameof(obj));
+
       return "\"" + obj + "\"";
+    }
+
+    [NotNull]
+    private static string PrintArray([NotNull] IEnumerable list)
+    {
+      Assert.ArgumentNotNull(list, nameof(list));
+
+      return "[" + string.Join(", ", list.Cast<object>().Select(Print).ToArray()) + "]";
     }
   }
 }

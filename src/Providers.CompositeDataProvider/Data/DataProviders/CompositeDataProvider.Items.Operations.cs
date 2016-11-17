@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics;
   using Sitecore.Data.Items;
   using Sitecore.Extensions.Enumerable;
   using Sitecore.Extensions.Object;
@@ -12,29 +13,41 @@
 
     public override bool CreateItem(ID itemID, string itemName, ID templateID, ItemDefinition parent, DateTime created, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, created, context);
 
-      this.Trace(isCreated, null, itemID, itemName, templateID, parent.ID, created, context.DataManager.Database.Name);
+      this.Trace(isCreated, timer, itemID, itemName, templateID, parent.ID, created, context);
 
       return isCreated;
     }
 
     public override bool CreateItem(ID itemID, string itemName, ID templateID, ItemDefinition parent, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, context);
 
-      this.Trace(isCreated, null, itemID, itemName, templateID, parent.ID, context.DataManager.Database.Name);
+      this.Trace(isCreated, timer, itemID, itemName, templateID, parent.ID, context);
 
       return isCreated;
     }
 
     public override bool SaveItem(ItemDefinition itemDefinition, ItemChanges changes, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       if (HeadProvider.GetItemDefinition(itemDefinition.ID, new CallContext(context.DataManager, 1)) != null)
       {
         var isSaved = HeadProvider.SaveItem(itemDefinition, changes, context);
 
-        this.Trace(isSaved, null, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(isSaved, timer, itemDefinition.ID, context);
         
         return isSaved;
       }
@@ -51,14 +64,14 @@
           itemDefinition.Created,
           context))
       {             
-        this.Trace(false, null, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(false, timer, itemDefinition.ID, context);
 
         return false;
       }
 
       foreach (VersionUri version in GetItemVersions(itemDefinition, context))
       {
-        var versionFields = this.GetItemFields(itemDefinition, version, context);
+        var versionFields = GetItemFields(itemDefinition, version, context);
         var versionCopy = new ItemChanges(changes.Item);
         foreach (KeyValuePair<ID, string> pair in versionFields)
         {
@@ -70,17 +83,21 @@
 
       var saved = HeadProvider.SaveItem(itemDefinition, changes, context);
 
-      this.Trace(saved, null, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(saved, timer, itemDefinition.ID, context);
                    
       return saved;
     }
 
     public override bool CopyItem(ItemDefinition source, ItemDefinition destination, string copyName, ID copyID, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       // source item is in head provider
       if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
       {
-        this.Trace(true, null, source.ID, destination.ID, copyName, copyID, context.DataManager.Database.Name);
+        this.Trace(true, timer, source.ID, destination.ID, copyName, copyID, context);
 
         return true;
       }
@@ -113,9 +130,13 @@
 
     public override bool MoveItem(ItemDefinition itemDefinition, ItemDefinition destination, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       if (HeadProvider.MoveItem(itemDefinition, destination, context))
       {
-        this.Trace(true, null, itemDefinition.ID, destination.ID, context.DataManager.Database.Name);
+        this.Trace(true, timer, itemDefinition.ID, destination.ID, context);
 
         return true;
       }
@@ -125,11 +146,15 @@
 
     public override bool DeleteItem(ItemDefinition itemDefinition, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       // check if already deleted in head
       var headParentId = HeadProvider.GetParentID(itemDefinition, context);
       if (headParentId == ID.Undefined)
       {
-        this.Trace(true, null, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(true, timer, itemDefinition.ID, context);
 
         return true;
       }
@@ -142,7 +167,7 @@
 
         var deleted = HeadProvider.DeleteItem(itemDefinition, context);
 
-        this.Trace(deleted, null, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(deleted, timer, itemDefinition.ID, context);
 
         return deleted;
       }
@@ -162,7 +187,7 @@
 
       var deleted2 = CreateItem(itemId, itemDefinition.Name, itemDefinition.TemplateID, new ItemDefinition(ID.Undefined, "undefined", ID.Null, ID.Null), context);
 
-      this.Trace(deleted2, null, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(deleted2, timer, itemDefinition.ID, context);
 
       return deleted2;
     }

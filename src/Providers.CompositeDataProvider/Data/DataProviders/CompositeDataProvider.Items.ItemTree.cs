@@ -14,42 +14,58 @@
 
     public override ItemDefinition GetItemDefinition(ID itemId, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var definition = HeadProvider.GetItemDefinition(itemId, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetItemDefinition(itemId));
 
-      this.Trace(definition, null, itemId, context.DataManager.Database.Name);
+      this.Trace(definition, timer, itemId, context);
 
       return definition;
     }
 
     public override ID GetParentID(ItemDefinition itemDefinition, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var parentId = HeadProvider.GetParentID(itemDefinition, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetParentID(itemDefinition));
 
-      this.Trace(parentId, null, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(parentId, timer, itemDefinition, context);
 
       return parentId;
     }
 
     public override bool HasChildren(ItemDefinition itemDefinition, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var hasChildren = HeadProvider.HasChildren(itemDefinition, context) // speed optimization
         || DoGetChildIDs(itemDefinition, context).Any();
 
-      this.Trace(hasChildren, null, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(hasChildren, timer, itemDefinition, context);
 
       return hasChildren;
     }
 
     public override IDList GetChildIDs(ItemDefinition itemDefinition, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var list = new IDList();
 
       DoGetChildIDs(itemDefinition, context)
          .ForEach(x => list.Add(ID.Parse(x)));
 
-      this.Trace(list, null, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(list, timer, itemDefinition, context);
 
       return list;
     }
@@ -83,20 +99,22 @@
 
     public override ID ResolvePath(string itemPath, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
       ID pathId;
       if (ID.TryParse(itemPath, out pathId))
       {
-        this.Trace(pathId, null, itemPath, context.DataManager.Database.Name);
+        this.Trace(pathId, timer, itemPath, context);
 
         return pathId;
       }
 
-      var timer = Stopwatch.StartNew();
       if (!itemPath.StartsWith("/sitecore", StringComparison.OrdinalIgnoreCase))
       {
         return null;
       }
-                                             
+
       itemPath = itemPath.TrimEnd("/".ToCharArray());
       if (itemPath.Length == "/sitecore".Length)
       {
@@ -111,11 +129,11 @@
       var rootId = Sitecore.ItemIDs.RootID;
       var pathSegments = itemPath.Substring("/sitecore/".Length).Split('/');
       pathId = ResolvePath(rootId, pathSegments, 0, context);
-      
-      this.Trace(pathId, timer, itemPath, context.DataManager.Database.Name);
+
+      this.Trace(pathId, timer, itemPath, context);
 
       return pathId;
-    }        
+    }
 
     private ID ResolvePath(ID parentId, string[] pathSegments, int segmentIndex, CallContext context)
     {
@@ -123,8 +141,7 @@
       {
         return parentId;
       }
-
-      var timer = Stopwatch.StartNew();
+                        
       var segmentName = pathSegments[segmentIndex];
       foreach (var provider in ReadOnlyProviders)
       {
@@ -143,13 +160,11 @@
             continue;
           }
 
-          var pathId = this.ResolvePath(childId, pathSegments, segmentIndex + 1, context);
+          var pathId = ResolvePath(childId, pathSegments, segmentIndex + 1, context);
           if (pathId == (ID)null)
           {
             continue;
           }
-
-          this.Trace(pathId, timer, segmentName, context.DataManager.Database.Name);
 
           return pathId;
         }
@@ -169,7 +184,7 @@
       var children = HeadProviderEx.GetChildIdsByName(segmentName, parentId);
       foreach (var childId in children)
       {
-        var pathId = ResolvePath(childId, pathSegments, segmentIndex + 1, context);
+        var pathId = ResolveHeadPath(childId, pathSegments, segmentIndex + 1, context);
         if (pathId != (ID)null)
         {
           return pathId;
@@ -181,6 +196,10 @@
 
     public override IDList SelectIDs(string query, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var list = new IDList();
 
       ReadOnlyProviders
@@ -191,19 +210,23 @@
         .GroupBy(x => x).Select(x => x.First()) // .Distinct()
         .ForEach(x => list.Add(x));
 
-      this.Trace(list, null, query, context.DataManager.Database.Name);
+      this.Trace(list, timer, query, context);
 
       return list;
     }
 
     public override ID SelectSingleID(string query, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var id = ReadOnlyProviders.FirstNotNull(x => x
         .SelectIDs(query)?
         .Select(ID.Parse)
         .FirstOrDefault());
 
-      this.Trace(id, null, query, context.DataManager.Database.Name);
+      this.Trace(id, timer, query, context);
 
       return id;
     }

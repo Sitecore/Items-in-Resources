@@ -2,10 +2,12 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics;
   using System.Linq;
   using Sitecore.Collections;
   using Sitecore.Data.Templates;
-  
+  using Sitecore.Extensions.Object;
+
   public partial class CompositeDataProvider
   {
     /* Items.Templates part of DataProvider */
@@ -17,7 +19,11 @@
     private static readonly IEnumerable<ID> EmptyIds = new ID[0];
 
     public override IdCollection GetTemplateItemIds(CallContext context)
-    {                
+    {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var result = new IdCollection();
       var headIds = HeadProvider.GetTemplateItemIds(context) ?? new IdCollection();
 
@@ -32,12 +38,18 @@
         .ToArray();
 
       result.Add(ids);
+
+      this.Trace(result, timer, context);
         
       return result;
     }
 
     public override TemplateCollection GetTemplates(CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+
       var headTemplates = HeadProvider.GetTemplates(context) ?? EmptyTemplates;
 
       var readOnlyTemplates = ReadOnlyProviders
@@ -52,11 +64,18 @@
       var result = new TemplateCollection();
       result.Reset(templates);
 
+      this.Trace(result, timer, context);
+
       return result;
     }
 
     public override bool ChangeTemplate(ItemDefinition itemDefinition, TemplateChangeList changes, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif           
+      this.Trace(true, timer, itemDefinition, context);
+
       if (HeadProvider.ChangeTemplate(itemDefinition, changes, context))
       {
         return true;
@@ -67,11 +86,16 @@
 
     public override bool ChangeFieldSharing(TemplateField fieldDefinition, TemplateFieldSharing sharing, CallContext context)
     {
+#if DEBUG
+      var timer = Stopwatch.StartNew();
+#endif
+      this.Trace(true, timer, context);
+
       if (HeadProvider.ChangeFieldSharing(fieldDefinition, sharing, context))
       {
         return true;
       }
-
+                   
       throw new NotImplementedException();
     }
   }
