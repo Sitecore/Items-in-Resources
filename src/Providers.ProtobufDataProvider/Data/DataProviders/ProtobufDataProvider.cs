@@ -47,17 +47,6 @@
       return new ItemDefinition(itemId, item.Name, ID.Parse(item.TemplateID), ID.Null);
     }
 
-    public override string GetItemPath(ID itemId)
-    {
-      var item = DataSet.ItemInfo.TryGetValue(itemId.Guid);
-      if (item == null)
-      {
-        return null;
-      }
-
-      return GetItemPath(ID.Parse(item.ParentID)) + "/" + item.Name;
-    }
-
     public override IEnumerable<ID> GetChildIdsByName(string childName, ID parentId)
     {
       return DataSet.Children
@@ -151,18 +140,6 @@
       return list;
     }
 
-    public override ID ResolvePath(string itemPath)
-    {
-      Guid id;
-      if (!Guid.TryParse(itemPath, out id) && !ItemPathResolver.TryResolvePath(itemPath, DataSet.Children, out id))
-      {
-        // TODO: remove that after fixing null ref in SqlDataProvider.ResolvePathRec
-        return null;
-      }
-                                                    
-      return ID.Parse(id);
-    }    
-
     public override IEnumerable<Guid> SelectIDs(string query)
     {
       // 18860 18:03:22 INFO  SelectSingleID: fast://*[@@templateid = '{F68F13A6-3395-426A-B9A1-FA2DC60D94EB}' and @@name = 'da']
@@ -215,13 +192,6 @@
 #endif
 
       return ids;
-    }
-
-    public override bool HasChildren(ItemDefinition itemDefinition)
-    {
-      ItemInfo[] children;
-
-      return DataSet.Children.TryGetValue(itemDefinition.ID.Guid, out children) && (children != null) && (children.Length > 0);
     }
 
     [NotNull]

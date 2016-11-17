@@ -689,15 +689,7 @@ namespace Sitecore.Data.DataProviders
         Items.Values.Where(r => r.TemplateID == TemplateIDs.Template).Apply(r => result.Add(r.ItemID));
       }
       return result;
-    }
-
-    public override bool HasChildren([NotNull] ItemDefinition itemDefinition, [NotNull] CallContext context)
-    {
-      lock (this)
-      {
-        return Items.Values.Any(r => r.ParentID == itemDefinition.ID);
-      }
-    }
+    }                   
 
     public override bool MoveItem(
       [NotNull] ItemDefinition itemDefinition,

@@ -16,11 +16,6 @@
     [CanBeNull]
     public abstract IEnumerable<Language> GetLanguages();
 
-    public abstract bool HasChildren(ItemDefinition itemDefinition);
-
-    [CanBeNull]
-    public abstract ID ResolvePath(string itemPath);
-
     [CanBeNull]
     public abstract FieldList GetItemFields(ItemDefinition itemDefinition, VersionUri versionUri);
 
@@ -35,9 +30,6 @@
 
     [CanBeNull]
     public abstract ItemDefinition GetItemDefinition(ID itemId);
-
-    [CanBeNull]
-    public abstract string GetItemPath(ID itemId);
 
     public abstract IEnumerable<ID> GetChildIdsByName(string childName, ID parentId);
   }
