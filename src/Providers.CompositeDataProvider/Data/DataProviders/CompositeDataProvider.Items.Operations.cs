@@ -14,7 +14,7 @@
     {
       var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, created, context);
 
-      this.Trace(isCreated, 0, itemID, itemName, templateID, parent.ID, created, context.DataManager.Database.Name);
+      this.Trace(isCreated, null, itemID, itemName, templateID, parent.ID, created, context.DataManager.Database.Name);
 
       return isCreated;
     }
@@ -23,7 +23,7 @@
     {
       var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, context);
 
-      this.Trace(isCreated, 0, itemID, itemName, templateID, parent.ID, context.DataManager.Database.Name);
+      this.Trace(isCreated, null, itemID, itemName, templateID, parent.ID, context.DataManager.Database.Name);
 
       return isCreated;
     }
@@ -34,7 +34,7 @@
       {
         var isSaved = HeadProvider.SaveItem(itemDefinition, changes, context);
 
-        this.Trace(isSaved, 0, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(isSaved, null, itemDefinition.ID, context.DataManager.Database.Name);
         
         return isSaved;
       }
@@ -51,7 +51,7 @@
           itemDefinition.Created,
           context))
       {             
-        this.Trace(false, 0, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(false, null, itemDefinition.ID, context.DataManager.Database.Name);
 
         return false;
       }
@@ -70,7 +70,7 @@
 
       var saved = HeadProvider.SaveItem(itemDefinition, changes, context);
 
-      this.Trace(saved, 0, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(saved, null, itemDefinition.ID, context.DataManager.Database.Name);
                    
       return saved;
     }
@@ -80,7 +80,7 @@
       // source item is in head provider
       if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
       {
-        this.Trace(true, 0, source.ID, destination.ID, copyName, copyID, context.DataManager.Database.Name);
+        this.Trace(true, null, source.ID, destination.ID, copyName, copyID, context.DataManager.Database.Name);
 
         return true;
       }
@@ -115,7 +115,7 @@
     {
       if (HeadProvider.MoveItem(itemDefinition, destination, context))
       {
-        this.Trace(true, 0, itemDefinition.ID, destination.ID, context.DataManager.Database.Name);
+        this.Trace(true, null, itemDefinition.ID, destination.ID, context.DataManager.Database.Name);
 
         return true;
       }
@@ -129,7 +129,7 @@
       var headParentId = HeadProvider.GetParentID(itemDefinition, context);
       if (headParentId == ID.Undefined)
       {
-        this.Trace(true, 0, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(true, null, itemDefinition.ID, context.DataManager.Database.Name);
 
         return true;
       }
@@ -142,7 +142,7 @@
 
         var deleted = HeadProvider.DeleteItem(itemDefinition, context);
 
-        this.Trace(deleted, 0, itemDefinition.ID, context.DataManager.Database.Name);
+        this.Trace(deleted, null, itemDefinition.ID, context.DataManager.Database.Name);
 
         return deleted;
       }
@@ -162,7 +162,7 @@
 
       var deleted2 = CreateItem(itemId, itemDefinition.Name, itemDefinition.TemplateID, new ItemDefinition(ID.Undefined, "undefined", ID.Null, ID.Null), context);
 
-      this.Trace(deleted2, 0, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(deleted2, null, itemDefinition.ID, context.DataManager.Database.Name);
 
       return deleted2;
     }

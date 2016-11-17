@@ -2,7 +2,6 @@
 {
   using System.Diagnostics;
   using System.Linq;
-  using System.Net;
   using Sitecore.Collections;
   using Sitecore.Data;
   using Sitecore.Diagnostics;
@@ -10,20 +9,23 @@
   public static class ObjectExtensions
   {  
     [Conditional("DEBUG")]
-    public static void Trace([NotNull] this object obj, [CanBeNull] object result, int ignoreThisParam, [NotNull] params object[] arguments)
+    public static void Trace([NotNull] this object obj, [CanBeNull] object result, [CanBeNull] Stopwatch timer, [NotNull] params object[] arguments)
     {
       Assert.ArgumentNotNull(obj, nameof(obj));
       Assert.ArgumentNotNull(arguments, nameof(arguments));
+
+      timer?.Stop();
 
       var st = new StackTrace();
       var sf = st.GetFrame(1);
       Assert.IsNotNull(sf, nameof(sf));
 
+      var timerText = timer != null ? $"run {timer.Elapsed}" : "";
       var type = obj.GetType().FullName;
       var method = sf.GetMethod().Name;
       var argumentsText = string.Join(", ", arguments.Select(Print));
       var resultText = Print(result);
-      var message = $"Tracing call\r\n{type}.{method}({argumentsText}) = {resultText}\r\n";
+      var message = $"Tracing call {timerText}\r\n{type}.{method}({argumentsText}) = {resultText}\r\n";
 
       Log.Info(message, typeof(ObjectExtensions));
     }

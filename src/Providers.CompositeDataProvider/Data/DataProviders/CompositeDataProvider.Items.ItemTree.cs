@@ -16,7 +16,7 @@
       var definition = HeadProvider.GetItemDefinition(itemId, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetItemDefinition(itemId));
 
-      this.Trace(definition, 0, itemId, context.DataManager.Database.Name);
+      this.Trace(definition, null, itemId, context.DataManager.Database.Name);
 
       return definition;
     }
@@ -26,7 +26,7 @@
       var parentId = HeadProvider.GetParentID(itemDefinition, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetParentID(itemDefinition));
 
-      this.Trace(parentId, 0, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(parentId, null, itemDefinition.ID, context.DataManager.Database.Name);
 
       return parentId;
     }
@@ -36,7 +36,7 @@
       var hasChildren = HeadProvider.HasChildren(itemDefinition, context) // speed optimization
         || DoGetChildIDs(itemDefinition, context).Any();
       
-      this.Trace(hasChildren, 0, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(hasChildren, null, itemDefinition.ID, context.DataManager.Database.Name);
 
       return hasChildren;
     }
@@ -48,7 +48,7 @@
       DoGetChildIDs(itemDefinition, context)
          .ForEach(x => list.Add(ID.Parse(x)));
 
-      this.Trace(string.Join(", ", list), 0, itemDefinition.ID, context.DataManager.Database.Name);
+      this.Trace(list, null, itemDefinition.ID, context.DataManager.Database.Name);
 
       return list;
     }
@@ -85,7 +85,7 @@
       ID pathId;
       if (ID.TryParse(itemPath, out pathId))
       {
-        this.Trace(pathId, 0, itemPath, context.DataManager.Database.Name);
+        this.Trace(pathId, null, itemPath, context.DataManager.Database.Name);
 
         return pathId;
       }
@@ -121,7 +121,7 @@
           // HeadProvider doesn't have anything for this item
           // so just return id     
 
-          this.Trace(pathId, 0, itemPath, context.DataManager.Database.Name);
+          this.Trace(pathId, null, itemPath, context.DataManager.Database.Name);
 
           return id;
         }
@@ -139,7 +139,7 @@
         {
           // not moved, it's okay
 
-          this.Trace(id, 0, itemPath, context.DataManager.Database.Name);
+          this.Trace(id, null, itemPath, context.DataManager.Database.Name);
 
           return id;
         }
@@ -148,7 +148,7 @@
         break;
       }
 
-      this.Trace(null, 0, itemPath, context.DataManager.Database.Name);
+      this.Trace(null, null, itemPath, context.DataManager.Database.Name);
                    
       return null;
 
@@ -176,7 +176,7 @@
         .GroupBy(x => x).Select(x => x.First()) // .Distinct()
         .ForEach(x => list.Add(x));
 
-      this.Trace(list, 0, query, context.DataManager.Database.Name);
+      this.Trace(list, null, query, context.DataManager.Database.Name);
 
       return list;
     }
@@ -188,7 +188,7 @@
         .Select(ID.Parse)
         .FirstOrDefault());
       
-      this.Trace(id, 0, query, context.DataManager.Database.Name);
+      this.Trace(id, null, query, context.DataManager.Database.Name);
 
       return id;
     }
