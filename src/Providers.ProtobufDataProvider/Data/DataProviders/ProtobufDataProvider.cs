@@ -58,6 +58,13 @@
       return GetItemPath(ID.Parse(item.ParentID)) + "/" + item.Name;
     }
 
+    public override IEnumerable<ID> GetChildIdsByName(string childName, ID parentId)
+    {
+      return DataSet.Children
+        .TryGetValue(parentId.Guid)?
+        .Select(x => ID.Parse(x.ID));
+    }
+
     public override IEnumerable<Guid> GetChildIDs(ItemDefinition itemDefinition)
     {
       // TODO: change signature to create IDList once per all data providers

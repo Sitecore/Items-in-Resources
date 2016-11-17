@@ -40,6 +40,7 @@
   <ItemGroup>
     <Compile Include="Data\DataProviders\AbstractDataProvider.NotSupported.cs" />
     <Compile Include="Data\DataProviders\AbstractDataProvider.cs" />
+    <Compile Include="Data\DataProviders\IDataProviderEx.cs" />
     <Compile Include="Data\DataProviders\ReadOnlyDataProvider.NotSupported.cs" />
     <Compile Include="Data\DataProviders\ReadOnlyDataProvider.cs" />
     <Compile Include="Data\ItemIDs.cs" />

@@ -5,7 +5,7 @@
   using Sitecore.Collections;
   using Sitecore.Globalization;
 
-  public abstract partial class ReadOnlyDataProvider : AbstractDataProvider
+  public abstract partial class ReadOnlyDataProvider : AbstractDataProvider, IDataProviderEx
   {                      
     [CanBeNull]
     public abstract IEnumerable<Guid> SelectIDs(string query);
@@ -38,5 +38,7 @@
 
     [CanBeNull]
     public abstract string GetItemPath(ID itemId);
+
+    public abstract IEnumerable<ID> GetChildIdsByName(string childName, ID parentId);
   }
 }

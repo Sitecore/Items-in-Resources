@@ -13,6 +13,9 @@
     [CanBeNull]
     private DataProvider _HeadProvider;
 
+    [CanBeNull]
+    private IDataProviderEx _HeadProviderEx;
+
     protected AbstractCompositeDataProvider(string databaseName)
     {                                                        
       DatabaseName = databaseName;          
@@ -25,6 +28,7 @@
       DatabaseName = databaseName;
       _ReadOnlyProviders.AddRange(providers.OfType<ReadOnlyDataProvider>());
       _HeadProvider = providers.Single(x => !(x is ReadOnlyDataProvider));
+      _HeadProviderEx = (IDataProviderEx)HeadProvider;
     }
 
     [NotNull]
@@ -36,6 +40,18 @@
         Assert.IsNotNull(headProvider, "No head provider available");
 
         return headProvider;
+      }
+    }
+
+    [NotNull]
+    protected IDataProviderEx HeadProviderEx
+    {
+      get
+      {
+        var headProviderEx = _HeadProviderEx;
+        Assert.IsNotNull(headProviderEx, "No head provider available");
+
+        return headProviderEx;
       }
     }
 
@@ -59,6 +75,7 @@
           Log.Info($"Add [{DatabaseName}] HEAD data provider: {dataProvider.GetType().FullName}", this);
 
           _HeadProvider = dataProvider;
+          _HeadProviderEx = (IDataProviderEx)dataProvider;
         }
         else
         {

@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using System.Diagnostics;
   using System.Linq;
   using Sitecore.Collections;
   using Sitecore.Extensions.Enumerable;
@@ -35,7 +36,7 @@
     {
       var hasChildren = HeadProvider.HasChildren(itemDefinition, context) // speed optimization
         || DoGetChildIDs(itemDefinition, context).Any();
-      
+
       this.Trace(hasChildren, null, itemDefinition.ID, context.DataManager.Database.Name);
 
       return hasChildren;
@@ -81,7 +82,7 @@
     }
 
     public override ID ResolvePath(string itemPath, CallContext context)
-    {                                                            
+    {
       ID pathId;
       if (ID.TryParse(itemPath, out pathId))
       {
@@ -89,83 +90,97 @@
 
         return pathId;
       }
-        
-      var ids = new Dictionary<ID, string>();
+
+      var timer = Stopwatch.StartNew();
+      if (!itemPath.StartsWith("/sitecore", StringComparison.OrdinalIgnoreCase))
+      {
+        return null;
+      }
+                                             
+      itemPath = itemPath.TrimEnd("/".ToCharArray());
+      if (itemPath.Length == "/sitecore".Length)
+      {
+        return ID.Parse(ItemIDs.RootItemID);
+      }
+
+      if (itemPath["/sitecore".Length] != '/')
+      {
+        throw new ArgumentException($"itemPath must start with /sitecore/ (actual: {itemPath})");
+      }
+
+      var rootId = Sitecore.ItemIDs.RootID;
+      var pathSegments = itemPath.Substring("/sitecore/".Length).Split('/');
+      pathId = ResolvePath(rootId, pathSegments, 0, context);
+      
+      this.Trace(pathId, timer, itemPath, context.DataManager.Database.Name);
+
+      return pathId;
+    }        
+
+    private ID ResolvePath(ID parentId, string[] pathSegments, int segmentIndex, CallContext context)
+    {
+      if (segmentIndex >= pathSegments.Length)
+      {
+        return parentId;
+      }
+
+      var timer = Stopwatch.StartNew();
+      var segmentName = pathSegments[segmentIndex];
       foreach (var provider in ReadOnlyProviders)
       {
-        var id = provider.ResolvePath(itemPath);
-        if (ReferenceEquals(id, null) || ids.ContainsKey(id))
+        var children = provider.GetChildIdsByName(segmentName, parentId);
+        if (children == null)
         {
           continue;
         }
 
-        var path = provider.GetItemPath(id);
-        ids.Add(id, path);
-
-        // ResolvePath may return ID of the closest ancestor e.g. /sitecore/content's ID when /sitecore/content/home is missing
-        // so here we check this situation 
-        if (!path.Equals(itemPath, StringComparison.OrdinalIgnoreCase))
-        {          
-          itemPath = itemPath.TrimEnd(" /".ToCharArray());
-          path = path.TrimEnd(" /".ToCharArray());
-          if (!path.Equals(itemPath, StringComparison.OrdinalIgnoreCase))
+        foreach (var childId in children)
+        {
+          // TODO: refactor that in kernel
+          var headParentId = HeadProvider.GetParentID(new ItemDefinition(childId, "--fake--", ID.Null, ID.Null), context);
+          if (headParentId != (ID)null && headParentId != parentId)
           {
-            throw new NotImplementedException(itemPath + " != " + path);
+            continue;
           }
+
+          var pathId = this.ResolvePath(childId, pathSegments, segmentIndex + 1, context);
+          if (pathId == (ID)null)
+          {
+            continue;
+          }
+
+          this.Trace(pathId, timer, segmentName, context.DataManager.Database.Name);
+
+          return pathId;
         }
-
-        // The item may be moved or deleted in the HeadProvider so we check that before returning id
-        var itemDefinition = HeadProvider.GetItemDefinition(id, context);
-        if (itemDefinition == null)
-        {
-          // HeadProvider doesn't have anything for this item
-          // so just return id     
-
-          this.Trace(pathId, null, itemPath, context.DataManager.Database.Name);
-
-          return id;
-        }
-
-        // okay, we have something - check that the item wasn't deleted
-        var parentId = HeadProvider.GetParentID(itemDefinition, context);
-        if (parentId == ID.Undefined)
-        {
-          break;
-        }
-
-        // okay, not deleted - then check if it was moved
-        var readonlyParentId = provider.GetParentID(itemDefinition);
-        if (readonlyParentId == parentId)
-        {
-          // not moved, it's okay
-
-          this.Trace(id, null, itemPath, context.DataManager.Database.Name);
-
-          return id;
-        }
-
-        // moved, return null
-        break;
       }
 
-      this.Trace(null, null, itemPath, context.DataManager.Database.Name);
-                   
-      return null;
+      return ResolveHeadPath(parentId, pathSegments, segmentIndex, context);
+    }
 
-      /*  
-       * /sitecore/content/home path should resolve to all these cases
-       * 
-       * /sitecore{111}/content{222}/home{333}
-       * /sitecore{111}/content{444}/home{333} (content item re-created)
-       * /sitecore{111}/content{333}/home{222} (home moved to /sitecore and renamed to content, content is moved to new content and renamed to home)
-       *  
-       *  but only 1 is supported now
-       *  
-       */
+    private ID ResolveHeadPath(ID parentId, string[] pathSegments, int segmentIndex, CallContext context)
+    {
+      if (segmentIndex >= pathSegments.Length)
+      {
+        return parentId;
+      }
+
+      var segmentName = pathSegments[segmentIndex];
+      var children = HeadProviderEx.GetChildIdsByName(segmentName, parentId);
+      foreach (var childId in children)
+      {
+        var pathId = ResolvePath(childId, pathSegments, segmentIndex + 1, context);
+        if (pathId != (ID)null)
+        {
+          return pathId;
+        }
+      }
+
+      return null;
     }
 
     public override IDList SelectIDs(string query, CallContext context)
-    {                     
+    {
       var list = new IDList();
 
       ReadOnlyProviders
@@ -187,7 +202,7 @@
         .SelectIDs(query)?
         .Select(ID.Parse)
         .FirstOrDefault());
-      
+
       this.Trace(id, null, query, context.DataManager.Database.Name);
 
       return id;
