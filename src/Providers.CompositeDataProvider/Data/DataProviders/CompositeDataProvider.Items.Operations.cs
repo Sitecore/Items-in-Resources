@@ -42,49 +42,28 @@
       return isCreated;
     }
 
-    public override bool SaveItem(ItemDefinition itemDefinition, ItemChanges changes, CallContext context)
+    public override bool SaveItem([NotNull] ItemDefinition itemDefinition, [NotNull] ItemChanges changes, [NotNull] CallContext context)
     {
+      Assert.ArgumentNotNull(itemDefinition, nameof(itemDefinition));
+      Assert.ArgumentNotNull(changes, nameof(changes));
+      Assert.ArgumentNotNull(context, nameof(context));
+
 #if DEBUG
       var timer = Stopwatch.StartNew();
 #endif
 
-      if (HeadProvider.GetItemDefinition(itemDefinition.ID, new CallContext(context.DataManager, 1)) != null)
+      if (HeadProvider.GetItemDefinition(itemDefinition.ID, context) == null)
       {
-        var isSaved = HeadProvider.SaveItem(itemDefinition, changes, context);
+        var item = changes.Item;
+        Assert.IsNotNull(item, nameof(item));
 
-        this.Trace(isSaved, timer, itemDefinition.ID, context);
-        
-        return isSaved;
-      }
-
-      var parentId = GetParentID(itemDefinition, context);
-      var parentItem = GetItemDefinition(parentId, context);
-
-      if (
-        !HeadProvider.CreateItem(
-          itemDefinition.ID,
-          itemDefinition.Name,
-          itemDefinition.TemplateID,
-          parentItem,
-          itemDefinition.Created,
-          context))
-      {             
-        this.Trace(false, timer, itemDefinition.ID, context);
-
-        return false;
-      }
-
-      foreach (VersionUri version in GetItemVersions(itemDefinition, context))
-      {
-        var versionFields = GetItemFields(itemDefinition, version, context);
-        var versionCopy = new ItemChanges(changes.Item);
-        foreach (KeyValuePair<ID, string> pair in versionFields)
+        if (!MigrateDefaultItem(itemDefinition, item, context))
         {
-          versionCopy.SetFieldValue(versionCopy.Item.Fields[pair.Key], pair.Value);
-        }
+          Log.Error($"Cannot migrate default item {item.Name} ({item.ID}) to head data provider", this);
 
-        HeadProvider.SaveItem(itemDefinition, versionCopy, context);
-      }
+          return false;
+        }
+      }                                                  
 
       var saved = HeadProvider.SaveItem(itemDefinition, changes, context);
 
@@ -193,6 +172,36 @@
 #endif
 
       return deleted2;
+    }
+
+    private bool MigrateDefaultItem([NotNull] ItemDefinition itemDefinition, [NotNull] Item item, [NotNull] CallContext context)
+    {
+      Assert.ArgumentNotNull(itemDefinition, nameof(itemDefinition));
+      Assert.ArgumentNotNull(item, nameof(item));
+      Assert.ArgumentNotNull(context, nameof(context));
+
+      using (var limit = new RecursionLimit($"{nameof(MigrateDefaultItem)}-{item.ID}", 1))
+      {
+        if (limit.Exceeded)
+        {
+          return true;
+        }
+
+        var defaultOptions = ItemSerializerOptions.GetDefaultOptions();
+        defaultOptions.AllowDefaultValues = false;
+        defaultOptions.AllowStandardValues = false;
+        defaultOptions.IncludeBlobFields = true;
+        defaultOptions.ProcessChildren = false;
+        var outerXml = item.GetOuterXml(defaultOptions);
+
+        var parent = item.Parent;
+        Assert.IsNotNull(parent, nameof(parent));
+
+        parent.Paste(outerXml, false, PasteMode.Overwrite);
+        Log.Audit(this, $"Default item {item.Name} ({item.Paths.FullPath}) was migrated to head provider");
+
+        return MoveItem(itemDefinition, GetItemDefinition(parent.ID, context), context);
+      }
     }
   }
 }
