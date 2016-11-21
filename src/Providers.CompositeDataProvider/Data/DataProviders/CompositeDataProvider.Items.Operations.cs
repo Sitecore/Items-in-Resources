@@ -113,7 +113,7 @@
           Assert.IsNotNull(target, nameof(target));
 
           target.Paste(outerXml, true, PasteMode.Overwrite);
-          Log.Audit(this, $"Default item {item.Name} ({item.ID.Guid:N}) was copied to {destination.ID:N} in head provider");
+          Log.Audit(this, "Default item {0} ({1}) was copied to {2} in head provider", item.Name, item.ID.ToString(), destination.ID.ToString());
 
           return true;
         }
@@ -235,7 +235,7 @@
           Assert.IsNotNull(parent, nameof(parent));
 
           parent.Paste(outerXml, false, PasteMode.Overwrite);
-          Log.Audit(this, $"Default item {item.Name} ({item.Paths.FullPath}) was migrated to head provider");
+          Log.Audit(this, "Default item {0} ({1}) was migrated to head provider", item.Name, item.ID.ToString());
 
           var result = MoveItem(itemDefinition, GetItemDefinition(parent.ID, context), context);
 
