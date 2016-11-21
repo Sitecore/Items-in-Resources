@@ -11,6 +11,7 @@ parts of content tree in separate locations such as SQL Server database and read
 
 * Supports Sitecore 8.2
 * Default items are editable (they are saved to sql at first change)
+* Default items can be copied, duplicated and moved to different location
 * Default items can be spreaded between several binary files
 * Querying sql items is supported (shorter than 600 nested items e.g. /sitecore/item1/item2/item3/.../item600, more lead to StackOverflowException)
 
@@ -38,5 +39,4 @@ parts of content tree in separate locations such as SQL Server database and read
 ### Usage
 
 After deployment Sitecore is ready to use, all the default Sitecore items are in the place. Everything is supported excepting:  
-* **not supported** some operations with default Sitecore items (edit, move, copy, duplicate), but **deleting is supported** 
-* **not supported** fast query and sitecore query
+* **partially supported** fast query and sitecore query
