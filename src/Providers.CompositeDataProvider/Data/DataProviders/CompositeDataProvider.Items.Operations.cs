@@ -1,7 +1,6 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using System;
-  using System.Collections.Generic;
   using System.Diagnostics;
   using Sitecore.Data.Items;
   using Sitecore.Diagnostics;
@@ -80,35 +79,45 @@
 #endif
 
       // source item is in head provider
-      if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
+      if (HeadProvider.GetItemDefinition(source.ID, context) != null)
       {
-        return true;
+        if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
+        {
+          return true;
+        }
       }
 
-      throw new NotImplementedException();
-
-      /*
       var database = context.DataManager.Database;
       var itemId = source.ID;
-      var sourceItem = database.GetItem(itemId);
-      var sourceVersions = sourceItem.Versions.GetVersions(true);
-      if (!CreateItem(itemId, copyName, sourceItem.TemplateID, destination, context))
-      {
-        return false;
-      }
 
-      var copyItem = database.GetItem(itemId);
-      copyItem.Versions.RemoveAll(true);
-      foreach (var languageGroup in sourceVersions.GroupBy(x => x.Language.Name))
+      using (new SecurityDisabler())
       {
-        var language = languageGroup.First().Language;
-        var lastVersion = languageGroup.Max(x => x.Version.Number);
-        for (var i = 1; i <= lastVersion; ++i)
+        var item = database.GetItem(itemId);
+        Assert.IsNotNull(item, nameof(item));
+
+        using (var limit = new RecursionLimit($"{nameof(CopyItem)}-{item.ID}-{destination.ID}", 1))
         {
-          copyItem = copyItem.Versions.AddVersion();
-          var sourceVersion = sourceVersions.FirstOrDefault(x => x.Language == language && x.Version.Number == i);
+          if (limit.Exceeded)
+          {
+            return true;
+          }
+
+          var defaultOptions = ItemSerializerOptions.GetDefaultOptions();
+          defaultOptions.AllowDefaultValues = false; // TODO: needs checking
+          defaultOptions.AllowStandardValues = false;
+          defaultOptions.IncludeBlobFields = true;
+          defaultOptions.ProcessChildren = true; // TODO: slow, needs optimization
+          var outerXml = item.GetOuterXml(defaultOptions);
+
+          var target = database.GetItem(destination.ID);
+          Assert.IsNotNull(target, nameof(target));
+
+          target.Paste(outerXml, true, PasteMode.Overwrite);
+          Log.Audit(this, $"Default item {item.Name} ({item.ID.Guid:N}) was copied to {destination.ID:N} in head provider");
+
+          return true;
         }
-      }*/
+      }
     }
 
     public override bool MoveItem([NotNull] ItemDefinition itemDefinition, [NotNull] ItemDefinition destination, [NotNull] CallContext context)
