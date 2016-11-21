@@ -76,7 +76,9 @@
 
     public override bool CopyItem(ItemDefinition source, ItemDefinition destination, string copyName, ID copyID, CallContext context)
     {
+#if DEBUG
       this.Trace(true, null, source.ID, destination.ID, copyName, copyID, context);
+#endif
 
       // source item is in head provider
       if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
@@ -112,7 +114,10 @@
 
     public override bool MoveItem(ItemDefinition itemDefinition, ItemDefinition destination, CallContext context)
     {
+
+#if DEBUG
       this.Trace(true, null, itemDefinition.ID, destination.ID, context);
+#endif   
 
       if (HeadProvider.MoveItem(itemDefinition, destination, context))
       {
