@@ -7,6 +7,7 @@
   using Sitecore.Diagnostics;
   using Sitecore.Extensions.Enumerable;
   using Sitecore.Extensions.Object;
+  using Sitecore.SecurityModel;
 
   public partial class CompositeDataProvider
   {
@@ -59,18 +60,16 @@
 
         if (!MigrateDefaultItem(itemDefinition, item, context))
         {
-          Log.Error($"Cannot migrate default item {item.Name} ({item.ID}) to head data provider", this);
-
           return false;
         }
-      }                                                  
+      }
 
       var saved = HeadProvider.SaveItem(itemDefinition, changes, context);
 
 #if DEBUG
       this.Trace(saved, timer, itemDefinition.ID, context);
 #endif
-                   
+
       return saved;
     }
 
@@ -192,20 +191,30 @@
           return true;
         }
 
-        var defaultOptions = ItemSerializerOptions.GetDefaultOptions();
-        defaultOptions.AllowDefaultValues = false;
-        defaultOptions.AllowStandardValues = false;
-        defaultOptions.IncludeBlobFields = true;
-        defaultOptions.ProcessChildren = false;
-        var outerXml = item.GetOuterXml(defaultOptions);
+        using (new SecurityDisabler())
+        {
+          var defaultOptions = ItemSerializerOptions.GetDefaultOptions();
+          defaultOptions.AllowDefaultValues = false;
+          defaultOptions.AllowStandardValues = false;
+          defaultOptions.IncludeBlobFields = true;
+          defaultOptions.ProcessChildren = false;
+          var outerXml = item.GetOuterXml(defaultOptions);
 
-        var parent = item.Parent;
-        Assert.IsNotNull(parent, nameof(parent));
+          var parent = item.Parent;
+          Assert.IsNotNull(parent, nameof(parent));
 
-        parent.Paste(outerXml, false, PasteMode.Overwrite);
-        Log.Audit(this, $"Default item {item.Name} ({item.Paths.FullPath}) was migrated to head provider");
+          parent.Paste(outerXml, false, PasteMode.Overwrite);
+          Log.Audit(this, $"Default item {item.Name} ({item.Paths.FullPath}) was migrated to head provider");
 
-        return MoveItem(itemDefinition, GetItemDefinition(parent.ID, context), context);
+          var result = MoveItem(itemDefinition, GetItemDefinition(parent.ID, context), context);
+
+          if (!result)
+          {
+            Log.Error($"Cannot migrate default item {item.Name} ({item.ID}) to head data provider", this);
+          }
+
+          return result;
+        }
       }
     }
   }
