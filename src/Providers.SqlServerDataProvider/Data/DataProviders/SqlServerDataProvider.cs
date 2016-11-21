@@ -2,6 +2,7 @@
 {
   using System;
   using System.Collections.Generic;
+  using Sitecore.Collections;
 
   public sealed class SqlServerDataProvider : Data.SqlServer.SqlServerDataProvider, IDataProviderEx
   {
@@ -26,6 +27,16 @@
     public new IEnumerable<ID> GetChildIdsByName(string childName, ID parentId)
     {
       return base.GetChildIdsByName(childName, parentId);
+    }
+
+    public override IDList GetChildIDs(ItemDefinition itemDefinition, CallContext context)
+    {
+      // to bypass prefetch cache 
+      // as prefetch cache doesn't work when parent item is not in SQL database
+      using (new DatabaseCacheDisabler())
+      {
+        return base.GetChildIDs(itemDefinition, context);
+      }
     }
   }
 }

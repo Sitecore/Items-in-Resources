@@ -111,19 +111,41 @@
       }*/
     }
 
-    public override bool MoveItem(ItemDefinition itemDefinition, ItemDefinition destination, CallContext context)
+    public override bool MoveItem([NotNull] ItemDefinition itemDefinition, [NotNull] ItemDefinition destination, [NotNull] CallContext context)
     {
+      Assert.ArgumentNotNull(itemDefinition, nameof(itemDefinition));
+      Assert.ArgumentNotNull(destination, nameof(destination));
+      Assert.ArgumentNotNull(context, nameof(context));
 
 #if DEBUG
-      this.Trace(true, null, itemDefinition.ID, destination.ID, context);
-#endif   
+      var timer = Stopwatch.StartNew();
+#endif
 
-      if (HeadProvider.MoveItem(itemDefinition, destination, context))
+      if (HeadProvider.GetItemDefinition(itemDefinition.ID, context) == null)
       {
-        return true;
+        using (new SecurityDisabler())
+        {
+          var item = context.DataManager.Database.GetItem(itemDefinition.ID);
+          Assert.IsNotNull(item, nameof(item));
+
+          if (!MigrateDefaultItem(itemDefinition, item, context))
+          {
+#if DEBUG
+            this.Trace(false, timer, itemDefinition.ID, destination.ID, context);
+#endif
+
+            return false;
+          }
+        }
       }
 
-      throw new NotImplementedException();
+      var moved = HeadProvider.MoveItem(itemDefinition, destination, context);
+
+#if DEBUG
+      this.Trace(moved, timer, itemDefinition.ID, destination.ID, context);
+#endif
+
+      return moved;
     }
 
     public override bool DeleteItem(ItemDefinition itemDefinition, CallContext context)
