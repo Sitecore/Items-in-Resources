@@ -33,14 +33,16 @@
           .Select(ID.Parse) ?? EmptyIds);
 
       var ids = headIds
-        .Concat(readOnlyIds)        
+        .Concat(readOnlyIds)
         .GroupBy(x => x.Guid).Select(x => x.First()) // .Distinct()
         .ToArray();
 
       result.Add(ids);
 
+#if DEBUG
       this.Trace(result, timer, context);
-        
+#endif
+
       return result;
     }
 
@@ -64,17 +66,16 @@
       var result = new TemplateCollection();
       result.Reset(templates);
 
+#if DEBUG
       this.Trace(result, timer, context);
+#endif
 
       return result;
     }
 
     public override bool ChangeTemplate(ItemDefinition itemDefinition, TemplateChangeList changes, CallContext context)
-    {
-#if DEBUG
-      var timer = Stopwatch.StartNew();
-#endif           
-      this.Trace(true, timer, itemDefinition, context);
+    {                          
+      this.Trace(true, null, itemDefinition, context);
 
       if (HeadProvider.ChangeTemplate(itemDefinition, changes, context))
       {
@@ -86,16 +87,13 @@
 
     public override bool ChangeFieldSharing(TemplateField fieldDefinition, TemplateFieldSharing sharing, CallContext context)
     {
-#if DEBUG
-      var timer = Stopwatch.StartNew();
-#endif
-      this.Trace(true, timer, context);
-
       if (HeadProvider.ChangeFieldSharing(fieldDefinition, sharing, context))
       {
+        this.Trace(true, null, context);
+
         return true;
       }
-                   
+
       throw new NotImplementedException();
     }
   }

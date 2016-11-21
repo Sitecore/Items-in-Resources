@@ -21,7 +21,9 @@
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetItemFields(itemDefinition, versionUri));
 
       // do not print fields
+#if DEBUG
       this.Trace(null, timer, itemDefinition, versionUri, context);
+#endif
 
       return itemFields;
     }
@@ -38,7 +40,9 @@
       var itemVersions = ReadOnlyProviders.Select(provider => provider.GetItemVersions(itemDefinition))
         .FirstOrDefault(list => list != null && list.Count > 0);
 
+#if DEBUG
       this.Trace(itemVersions, timer, itemDefinition, context);
+#endif
 
       return
         itemVersions ?? new VersionUriList();
@@ -52,7 +56,9 @@
 
       var version = HeadProvider.AddVersion(itemDefinition, baseVersion, context);
 
+#if DEBUG
       this.Trace(version, timer, itemDefinition, baseVersion, context);
+#endif
 
       return version;
     }
@@ -65,7 +71,9 @@
 
       var removed = HeadProvider.RemoveVersion(itemDefinition, version, context);
 
+#if DEBUG
       this.Trace(removed, timer, itemDefinition, version, context);
+#endif
 
       return removed;
     }
@@ -78,7 +86,9 @@
 
       var removed = HeadProvider.RemoveVersions(itemDefinition, language, context);
 
+#if DEBUG
       this.Trace(removed, timer, itemDefinition, language, context);
+#endif
 
       return removed;
     }
@@ -91,7 +101,9 @@
 
       var removed = HeadProvider.RemoveVersions(itemDefinition, language, removeSharedData, context);
 
+#if DEBUG
       this.Trace(removed, timer, itemDefinition, language, context);
+#endif
 
       return removed;
     }

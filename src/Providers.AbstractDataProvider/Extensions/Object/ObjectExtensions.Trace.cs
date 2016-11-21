@@ -8,11 +8,9 @@
   using Sitecore.Data;
   using Sitecore.Data.DataProviders;
   using Sitecore.Diagnostics;
-  using Sitecore.Globalization;
 
   public static class ObjectExtensions
-  {
-    [Conditional("DEBUG")]
+  {                          
     public static void Trace([NotNull] this object obj, [CanBeNull] object result, [CanBeNull] Stopwatch timer, [NotNull] params object[] arguments)
     {
       Assert.ArgumentNotNull(obj, nameof(obj));

@@ -19,7 +19,9 @@
 
       var exists = HeadProvider.BlobStreamExists(blobId, context);
 
+#if DEBUG
       this.Trace(exists, timer, blobId, context);
+#endif
 
       return exists;
     }
@@ -32,7 +34,9 @@
 
       var stream = HeadProvider.GetBlobStream(blobId, context);
 
+#if DEBUG
       this.Trace(stream, timer, blobId, context);
+#endif
 
       return stream;
     }
@@ -45,7 +49,9 @@
 
       var set = HeadProvider.SetBlobStream(stream, blobId, context);
 
+#if DEBUG
       this.Trace(set, timer, stream, blobId, context);
+#endif
 
       return set;
     }
@@ -58,7 +64,9 @@
 
       var removed = HeadProvider.RemoveBlobStream(blobId, context);
 
+#if DEBUG
       this.Trace(removed, timer, blobId, context);
+#endif
 
       return removed;
     }

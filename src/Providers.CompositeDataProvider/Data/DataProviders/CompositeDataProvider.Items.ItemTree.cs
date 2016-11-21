@@ -21,7 +21,9 @@
       var definition = HeadProvider.GetItemDefinition(itemId, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetItemDefinition(itemId));
 
+#if DEBUG
       this.Trace(definition, timer, itemId, context);
+#endif
 
       return definition;
     }
@@ -35,7 +37,9 @@
       var parentId = HeadProvider.GetParentID(itemDefinition, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetParentID(itemDefinition));
 
+#if DEBUG
       this.Trace(parentId, timer, itemDefinition, context);
+#endif
 
       return parentId;
     }
@@ -49,7 +53,9 @@
       var hasChildren = HeadProvider.HasChildren(itemDefinition, context) // speed optimization
         || DoGetChildIDs(itemDefinition, context).Any();
 
+#if DEBUG
       this.Trace(hasChildren, timer, itemDefinition, context);
+#endif
 
       return hasChildren;
     }
@@ -65,7 +71,9 @@
       DoGetChildIDs(itemDefinition, context)
          .ForEach(x => list.Add(ID.Parse(x)));
 
+#if DEBUG
       this.Trace(list, timer, itemDefinition, context);
+#endif
 
       return list;
     }
@@ -105,7 +113,9 @@
       ID pathId;
       if (ID.TryParse(itemPath, out pathId))
       {
+#if DEBUG
         this.Trace(pathId, timer, itemPath, context);
+#endif
 
         return pathId;
       }
@@ -130,7 +140,9 @@
       var pathSegments = itemPath.Substring("/sitecore/".Length).Split('/');
       pathId = ResolvePath(rootId, pathSegments, 0, context);
 
+#if DEBUG
       this.Trace(pathId, timer, itemPath, context);
+#endif
 
       return pathId;
     }
@@ -210,7 +222,9 @@
         .GroupBy(x => x).Select(x => x.First()) // .Distinct()
         .ForEach(x => list.Add(x));
 
+#if DEBUG
       this.Trace(list, timer, query, context);
+#endif
 
       return list;
     }
@@ -226,7 +240,9 @@
         .Select(ID.Parse)
         .FirstOrDefault());
 
+#if DEBUG
       this.Trace(id, timer, query, context);
+#endif
 
       return id;
     }

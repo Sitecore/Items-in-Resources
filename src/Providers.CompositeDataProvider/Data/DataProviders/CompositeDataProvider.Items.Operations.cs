@@ -4,6 +4,7 @@
   using System.Collections.Generic;
   using System.Diagnostics;
   using Sitecore.Data.Items;
+  using Sitecore.Diagnostics;
   using Sitecore.Extensions.Enumerable;
   using Sitecore.Extensions.Object;
 
@@ -19,7 +20,9 @@
 
       var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, created, context);
 
+#if DEBUG
       this.Trace(isCreated, timer, itemID, itemName, templateID, parent.ID, created, context);
+#endif
 
       return isCreated;
     }
@@ -32,7 +35,9 @@
 
       var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, context);
 
+#if DEBUG
       this.Trace(isCreated, timer, itemID, itemName, templateID, parent.ID, context);
+#endif
 
       return isCreated;
     }
@@ -83,22 +88,20 @@
 
       var saved = HeadProvider.SaveItem(itemDefinition, changes, context);
 
+#if DEBUG
       this.Trace(saved, timer, itemDefinition.ID, context);
+#endif
                    
       return saved;
     }
 
     public override bool CopyItem(ItemDefinition source, ItemDefinition destination, string copyName, ID copyID, CallContext context)
     {
-#if DEBUG
-      var timer = Stopwatch.StartNew();
-#endif
+      this.Trace(true, null, source.ID, destination.ID, copyName, copyID, context);
 
       // source item is in head provider
       if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
       {
-        this.Trace(true, timer, source.ID, destination.ID, copyName, copyID, context);
-
         return true;
       }
 
@@ -130,14 +133,10 @@
 
     public override bool MoveItem(ItemDefinition itemDefinition, ItemDefinition destination, CallContext context)
     {
-#if DEBUG
-      var timer = Stopwatch.StartNew();
-#endif
+      this.Trace(true, null, itemDefinition.ID, destination.ID, context);
 
       if (HeadProvider.MoveItem(itemDefinition, destination, context))
       {
-        this.Trace(true, timer, itemDefinition.ID, destination.ID, context);
-
         return true;
       }
 
@@ -154,8 +153,9 @@
       var headParentId = HeadProvider.GetParentID(itemDefinition, context);
       if (headParentId == ID.Undefined)
       {
+#if DEBUG
         this.Trace(true, timer, itemDefinition.ID, context);
-
+#endif
         return true;
       }
 
@@ -167,8 +167,9 @@
 
         var deleted = HeadProvider.DeleteItem(itemDefinition, context);
 
+#if DEBUG
         this.Trace(deleted, timer, itemDefinition.ID, context);
-
+#endif
         return deleted;
       }
 
@@ -187,7 +188,9 @@
 
       var deleted2 = CreateItem(itemId, itemDefinition.Name, itemDefinition.TemplateID, new ItemDefinition(ID.Undefined, "undefined", ID.Null, ID.Null), context);
 
+#if DEBUG
       this.Trace(deleted2, timer, itemDefinition.ID, context);
+#endif
 
       return deleted2;
     }
