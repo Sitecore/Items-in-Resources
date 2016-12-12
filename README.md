@@ -30,7 +30,7 @@ parts of content tree in separate locations such as SQL Server database and read
 
 ### Deployment
 
-1. Install Sitecore 8.1 Update-3 (e.g. using SIM)
+1. Install Sitecore 8.2 Update-0 (e.g. using SIM)
 2. Select the installed instance and click `Ribbon -> Home -> Bundled Tools -> Generate NuGets for selected instance`
 3. Open solution in Visual Studio 
 4. Use Visual Studio deploy to deploy Website to the installed instance 
