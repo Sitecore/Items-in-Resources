@@ -15,7 +15,7 @@
 
   public class ProtobufDataProvider : ReadOnlyDataProvider
   {
-    private static readonly Regex DescendantsQueryRegex = new Regex(@"^fast\://\*(\[[^\]])$", RegexOptions.Compiled);
+    private static readonly Regex DescendantsQueryRegex = new Regex(@"^fast\://\*\[([^\]]+)\]$", RegexOptions.Compiled);
 
     [NotNull]
     private readonly string DatabaseName;
@@ -147,7 +147,7 @@
 
       var desc = DescendantsQueryRegex.Match(query);
       IEnumerable<Guid> ids = null;
-      if (desc.NextMatch().Success)
+      if (desc.Success)
       {
         var conditionsQueryGroup = desc.Groups[1];
         var items = (IEnumerable<ItemInfo>)DataSet.ItemInfo.Values;
@@ -166,7 +166,7 @@
             Assert.IsTrue(arr.Length == 2, "wrong query");
 
             var keyword = arr.First().Trim();
-            var value = arr.Last().Trim();
+            var value = arr.Last().Trim(" '\"".ToCharArray());
             switch (keyword)
             {
               case "@@templateid":
