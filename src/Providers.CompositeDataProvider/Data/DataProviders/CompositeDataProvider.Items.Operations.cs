@@ -243,6 +243,10 @@
           {
             Log.Error($"Cannot migrate default item {item.Name} ({item.ID}) to head data provider", this);
           }
+          else
+          {
+            parent.Database.Caches.DataCache.RemoveItemInformation(item.ID);
+          }
 
           return result;
         }
