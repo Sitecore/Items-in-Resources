@@ -72,6 +72,8 @@ namespace Sitecore.sitecore.admin
       var headProvider = dataProvider
         .HeadProvider;
 
+      Assert.IsNotNull(headProvider, $"{nameof(headProvider)} is null");
+
       var itemDefinition = new ItemDefinition(uri.ItemID, string.Empty, Data.ID.Undefined, Data.ID.Undefined);
       var callContext = new CallContext(db.DataManager, 1);
       headProvider.DeleteItem(itemDefinition, callContext);

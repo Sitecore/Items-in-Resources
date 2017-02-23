@@ -18,7 +18,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, created, context);
+      var isCreated = HeadProvider?.CreateItem(itemID, itemName, templateID, parent, created, context) ?? false;
 
 #if DEBUG
       this.Trace(isCreated, timer, itemID, itemName, templateID, parent.ID, created, context);
@@ -33,7 +33,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var isCreated = HeadProvider.CreateItem(itemID, itemName, templateID, parent, context);
+      var isCreated = HeadProvider?.CreateItem(itemID, itemName, templateID, parent, context) ?? false;
 
 #if DEBUG
       this.Trace(isCreated, timer, itemID, itemName, templateID, parent.ID, context);
@@ -52,7 +52,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      if (HeadProvider.GetItemDefinition(itemDefinition.ID, context) == null)
+      if (HeadProvider?.GetItemDefinition(itemDefinition.ID, context) == null)
       {
         var item = changes.Item;
         Assert.IsNotNull(item, nameof(item));
@@ -63,8 +63,8 @@
         }
       }
 
-      var saved = HeadProvider.SaveItem(itemDefinition, changes, context);
-
+      var saved = HeadProvider?.SaveItem(itemDefinition, changes, context) ?? false;
+                                                                           
 #if DEBUG
       this.Trace(saved, timer, itemDefinition.ID, context);
 #endif
@@ -79,9 +79,9 @@
 #endif
 
       // source item is in head provider
-      if (HeadProvider.GetItemDefinition(source.ID, context) != null)
+      if (HeadProvider?.GetItemDefinition(source.ID, context) != null)
       {
-        if (HeadProvider.CopyItem(source, destination, copyName, copyID, context))
+        if (HeadProvider?.CopyItem(source, destination, copyName, copyID, context) ?? false)
         {
           return true;
         }
@@ -130,7 +130,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      if (HeadProvider.GetItemDefinition(itemDefinition.ID, context) == null)
+      if (HeadProvider?.GetItemDefinition(itemDefinition.ID, context) == null)
       {
         using (new SecurityDisabler())
         {
@@ -148,7 +148,7 @@
         }
       }
 
-      var moved = HeadProvider.MoveItem(itemDefinition, destination, context);
+      var moved = HeadProvider?.MoveItem(itemDefinition, destination, context) ?? false;
 
 #if DEBUG
       this.Trace(moved, timer, itemDefinition.ID, destination.ID, context);
@@ -164,7 +164,7 @@
 #endif
 
       // check if already deleted in head
-      var headParentId = HeadProvider.GetParentID(itemDefinition, context);
+      var headParentId = HeadProvider?.GetParentID(itemDefinition, context);
       if (headParentId == ID.Undefined)
       {
 #if DEBUG
@@ -179,7 +179,7 @@
         // item may only exist in head provider
         // so we can simply delete it 
 
-        var deleted = HeadProvider.DeleteItem(itemDefinition, context);
+        var deleted = HeadProvider?.DeleteItem(itemDefinition, context) ?? false;
 
 #if DEBUG
         this.Trace(deleted, timer, itemDefinition.ID, context);
@@ -187,12 +187,12 @@
         return deleted;
       }
 
-      if (HeadProvider.GetItemDefinition(itemId, context) != null)
+      if (HeadProvider?.GetItemDefinition(itemId, context) != null)
       {
         // item exists both in read-only data provider and in HEAD
         // so we first delete it in HEAD
 
-        HeadProvider.DeleteItem(itemDefinition, context);
+        HeadProvider?.DeleteItem(itemDefinition, context);
 
         // and pretend it was only in read-only data provider
       }

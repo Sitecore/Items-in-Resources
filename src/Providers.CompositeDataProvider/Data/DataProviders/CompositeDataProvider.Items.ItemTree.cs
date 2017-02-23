@@ -18,7 +18,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var definition = HeadProvider.GetItemDefinition(itemId, context)
+      var definition = HeadProvider?.GetItemDefinition(itemId, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetItemDefinition(itemId));
 
 #if DEBUG
@@ -34,7 +34,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var parentId = HeadProvider.GetParentID(itemDefinition, context)
+      var parentId = HeadProvider?.GetParentID(itemDefinition, context)
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetParentID(itemDefinition));
 
 #if DEBUG
@@ -50,8 +50,8 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var hasChildren = HeadProvider.HasChildren(itemDefinition, context) // speed optimization
-        || DoGetChildIDs(itemDefinition, context).Any();
+      var hasChildren = HeadProvider?.HasChildren(itemDefinition, context) // speed optimization
+        ?? DoGetChildIDs(itemDefinition, context).Any();
 
 #if DEBUG
       this.Trace(hasChildren, timer, itemDefinition, context);
@@ -81,7 +81,7 @@
     [NotNull]
     private IEnumerable<ID> DoGetChildIDs(ItemDefinition itemDefinition, CallContext context)
     {
-      var headChildIDs = HeadProvider
+      var headChildIDs = HeadProvider?
         .GetChildIDs(itemDefinition, context)?
         .Cast<ID>().ToArray() ?? EmptyIds;
 
@@ -166,7 +166,7 @@
         foreach (var childId in children)
         {
           // TODO: refactor that in kernel
-          var headParentId = HeadProvider.GetParentID(new ItemDefinition(childId, "--fake--", ID.Null, ID.Null), context);
+          var headParentId = HeadProvider?.GetParentID(new ItemDefinition(childId, "--fake--", ID.Null, ID.Null), context);
           if (headParentId != (ID)null && headParentId != parentId)
           {
             continue;

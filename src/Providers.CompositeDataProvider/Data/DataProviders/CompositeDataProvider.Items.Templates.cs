@@ -25,7 +25,7 @@
 #endif
 
       var result = new IdCollection();
-      var headIds = HeadProvider.GetTemplateItemIds(context) ?? new IdCollection();
+      var headIds = HeadProvider?.GetTemplateItemIds(context) ?? new IdCollection();
 
       var readOnlyIds = ReadOnlyProviders
         .SelectMany(x => x
@@ -77,7 +77,7 @@
     {                          
       this.Trace(true, null, itemDefinition, context);
 
-      if (HeadProvider.ChangeTemplate(itemDefinition, changes, context))
+      if (HeadProvider?.ChangeTemplate(itemDefinition, changes, context) ?? false)
       {
         return true;
       }
@@ -87,7 +87,7 @@
 
     public override bool ChangeFieldSharing(TemplateField fieldDefinition, TemplateFieldSharing sharing, CallContext context)
     {
-      if (HeadProvider.ChangeFieldSharing(fieldDefinition, sharing, context))
+      if (HeadProvider?.ChangeFieldSharing(fieldDefinition, sharing, context) ?? false)
       {
         this.Trace(true, null, context);
 

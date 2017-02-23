@@ -2,11 +2,12 @@
 {
   using System.Collections.Generic;
   using System.Linq;
+  using Sitecore.Common;
   using Sitecore.Diagnostics;
   using Sitecore.Extensions.DataProvider;
 
   public abstract class AbstractCompositeDataProvider : AbstractDataProvider
-  {              
+  {
     [NotNull]
     private readonly List<ReadOnlyDataProvider> _ReadOnlyProviders = new List<ReadOnlyDataProvider>();
 
@@ -17,25 +18,32 @@
     private IDataProviderEx _HeadProviderEx;
 
     protected AbstractCompositeDataProvider(string databaseName)
-    {                                                        
-      DatabaseName = databaseName;          
+    {
+      DatabaseName = databaseName;
     }
 
     protected AbstractCompositeDataProvider(string databaseName, [NotNull] params DataProvider[] providers)
     {
       Assert.ArgumentNotNull(providers, nameof(providers));
 
+      var headProvider = providers.Single(x => !(x is ReadOnlyDataProvider));
+
       DatabaseName = databaseName;
       _ReadOnlyProviders.AddRange(providers.OfType<ReadOnlyDataProvider>());
-      _HeadProvider = providers.Single(x => !(x is ReadOnlyDataProvider));
-      _HeadProviderEx = (IDataProviderEx)HeadProvider;
+      _HeadProvider = headProvider;
+      _HeadProviderEx = (IDataProviderEx)headProvider;
     }
 
-    [NotNull]
+    [CanBeNull]
     protected internal DataProvider HeadProvider
     {
       get
       {
+        if (Switcher<HeadProviderState, HeadProviderState>.CurrentValue == HeadProviderState.Disabled)
+        {
+          return null;
+        }
+
         var headProvider = _HeadProvider;
         Assert.IsNotNull(headProvider, "No head provider available");
 
@@ -43,11 +51,16 @@
       }
     }
 
-    [NotNull]
+    [CanBeNull]
     protected internal IDataProviderEx HeadProviderEx
     {
       get
       {
+        if (Switcher<HeadProviderState, HeadProviderState>.CurrentValue == HeadProviderState.Disabled)
+        {
+          return null;
+        }
+
         var headProviderEx = _HeadProviderEx;
         Assert.IsNotNull(headProviderEx, "No head provider available");
 
@@ -90,7 +103,7 @@
     {
       base.Initialize();
 
-      HeadProvider.SetDatabase(Database);
+      HeadProvider?.SetDatabase(Database);
 
       foreach (var provider in ReadOnlyProviders)
       {

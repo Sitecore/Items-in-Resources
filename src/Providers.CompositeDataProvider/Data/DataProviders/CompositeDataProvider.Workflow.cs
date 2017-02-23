@@ -8,17 +8,17 @@
 
     public override DataUri[] GetItemsInWorkflowState(WorkflowInfo info, CallContext context)
     {
-      return HeadProvider.GetItemsInWorkflowState(info, context);
+      return HeadProvider?.GetItemsInWorkflowState(info, context) ?? new DataUri[0];
     }
 
     public override WorkflowInfo GetWorkflowInfo(ItemDefinition item, VersionUri version, CallContext context)
     {
-      return HeadProvider.GetWorkflowInfo(item, version, context);
+      return HeadProvider?.GetWorkflowInfo(item, version, context);
     }
 
     public override bool SetWorkflowInfo(ItemDefinition item, VersionUri version, WorkflowInfo info, CallContext context)
     {
-      return HeadProvider.SetWorkflowInfo(item, version, info, context);
+      return HeadProvider?.SetWorkflowInfo(item, version, info, context) ?? false;
     }
   }
 }

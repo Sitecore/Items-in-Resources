@@ -11,9 +11,8 @@
 
   public static class ObjectExtensions
   {                          
-    public static void Trace([NotNull] this object obj, [CanBeNull] object result, [CanBeNull] Stopwatch timer, [NotNull] params object[] arguments)
+    public static void Trace<T>([CanBeNull, UsedImplicitly] this T obj, [CanBeNull] object result, [CanBeNull] Stopwatch timer, [NotNull] params object[] arguments)
     {
-      Assert.ArgumentNotNull(obj, nameof(obj));
       Assert.ArgumentNotNull(arguments, nameof(arguments));
 
       timer?.Stop();
@@ -22,7 +21,7 @@
       var sf = st.GetFrame(1);
       Assert.IsNotNull(sf, nameof(sf));
 
-      var type = obj.GetType().Name;
+      var type = typeof(T).Name;
       var method = sf.GetMethod().Name;
       var argumentsText = string.Join(", ", arguments.Select(Print));
       var resultText = Print(result);

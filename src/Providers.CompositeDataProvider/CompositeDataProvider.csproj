@@ -50,6 +50,8 @@
     <Compile Include="Data\DataProviders\CompositeDataProvider.Properties.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.PublishQueue.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.Workflow.cs" />
+    <Compile Include="Data\DataProviders\HeadProviderDisabler.cs" />
+    <Compile Include="Data\DataProviders\HeadProviderState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

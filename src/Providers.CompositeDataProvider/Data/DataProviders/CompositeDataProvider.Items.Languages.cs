@@ -21,7 +21,7 @@
 #endif
 
       var languages = ReadOnlyProviders.SelectMany(x => x.GetLanguages() ?? EmptyLanguages);
-      var headLanguages = HeadProvider.GetLanguages(context);
+      var headLanguages = HeadProvider?.GetLanguages(context);
       if (headLanguages != null)
       {
         languages = languages.Concat(headLanguages);
@@ -44,7 +44,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      HeadProvider.RemoveLanguageData(language, context);
+      HeadProvider?.RemoveLanguageData(language, context);
 
 #if DEBUG
       this.Trace(null, timer, language, context);
@@ -57,7 +57,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      HeadProvider.RenameLanguageData(fromLanguage, toLanguage, context);
+      HeadProvider?.RenameLanguageData(fromLanguage, toLanguage, context);
 
 #if DEBUG
       this.Trace(null, timer, fromLanguage, toLanguage, context);

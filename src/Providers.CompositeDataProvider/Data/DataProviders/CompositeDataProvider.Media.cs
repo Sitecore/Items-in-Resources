@@ -17,7 +17,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var exists = HeadProvider.BlobStreamExists(blobId, context);
+      var exists = HeadProvider?.BlobStreamExists(blobId, context) ?? false;
 
 #if DEBUG
       this.Trace(exists, timer, blobId, context);
@@ -32,7 +32,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var stream = HeadProvider.GetBlobStream(blobId, context);
+      var stream = HeadProvider?.GetBlobStream(blobId, context);
 
 #if DEBUG
       this.Trace(stream, timer, blobId, context);
@@ -47,7 +47,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var set = HeadProvider.SetBlobStream(stream, blobId, context);
+      var set = HeadProvider?.SetBlobStream(stream, blobId, context) ?? false;
 
 #if DEBUG
       this.Trace(set, timer, stream, blobId, context);
@@ -62,7 +62,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var removed = HeadProvider.RemoveBlobStream(blobId, context);
+      var removed = HeadProvider?.RemoveBlobStream(blobId, context) ?? false;
 
 #if DEBUG
       this.Trace(removed, timer, blobId, context);

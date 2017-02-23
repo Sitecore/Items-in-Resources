@@ -17,7 +17,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var itemFields = HeadProvider.GetItemFields(itemDefinition, versionUri, context) 
+      var itemFields = HeadProvider?.GetItemFields(itemDefinition, versionUri, context) 
         ?? ReadOnlyProviders.FirstNotNull(x => x.GetItemFields(itemDefinition, versionUri));
 
       // do not print fields
@@ -33,7 +33,7 @@
 #if DEBUG
       var timer = Stopwatch.StartNew();
 #endif
-      var headList = HeadProvider.GetItemVersions(itemDefinition, context);
+      var headList = HeadProvider?.GetItemVersions(itemDefinition, context);
 
       if (headList != null && headList.Count > 0) return headList;
 
@@ -54,7 +54,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var version = HeadProvider.AddVersion(itemDefinition, baseVersion, context);
+      var version = HeadProvider?.AddVersion(itemDefinition, baseVersion, context) ?? -1;
 
 #if DEBUG
       this.Trace(version, timer, itemDefinition, baseVersion, context);
@@ -69,7 +69,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var removed = HeadProvider.RemoveVersion(itemDefinition, version, context);
+      var removed = HeadProvider?.RemoveVersion(itemDefinition, version, context) ?? false;
 
 #if DEBUG
       this.Trace(removed, timer, itemDefinition, version, context);
@@ -84,7 +84,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var removed = HeadProvider.RemoveVersions(itemDefinition, language, context);
+      var removed = HeadProvider?.RemoveVersions(itemDefinition, language, context) ?? false;
 
 #if DEBUG
       this.Trace(removed, timer, itemDefinition, language, context);
@@ -99,7 +99,7 @@
       var timer = Stopwatch.StartNew();
 #endif
 
-      var removed = HeadProvider.RemoveVersions(itemDefinition, language, removeSharedData, context);
+      var removed = HeadProvider?.RemoveVersions(itemDefinition, language, removeSharedData, context) ?? false;
 
 #if DEBUG
       this.Trace(removed, timer, itemDefinition, language, context);
