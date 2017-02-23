@@ -12,7 +12,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Sitecore</RootNamespace>
-    <AssemblyName>Sitecore.Website</AssemblyName>
+    <AssemblyName>Sitecore.Client.CompositeDataProvider</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -42,20 +42,23 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\SC.protobuf-net.8.2.0\lib\protobuf-net.dll</HintPath>
+    <Reference Include="Sitecore.Kernel, Version=10.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SC.Sitecore.Kernel.8.2.0\lib\Sitecore.Kernel.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Web.ApplicationServices" />
-    <Reference Include="System.Web.DynamicData" />
-    <Reference Include="System.Web.Entity" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="sitecore\admin\restore-items.aspx.cs">
+      <DependentUpon>restore-items.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="sitecore\admin\restore-items.aspx.designer.cs">
+      <DependentUpon>restore-items.aspx</DependentUpon>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Config\Include\zzz\DataProviders.Core.config" />
@@ -88,6 +91,7 @@
     <Content Include="..\..\data\Providers.ProtobufDataProvider\web.definitions.dat">
       <Link>App_Data\web.definitions.dat</Link>
     </Content>
+    <Content Include="sitecore\admin\restore-items.aspx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Config\Include\zzz\DataProviders.Master.config">
@@ -95,6 +99,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Providers.AbstractDataProvider\AbstractDataProvider.csproj">
+      <Project>{7E84783D-1DB2-4DFC-9229-380AE8066E57}</Project>
+      <Name>AbstractDataProvider</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Providers.MemoryDataProvider\MemoryDataProvider.csproj">
       <Project>{361cc68c-c85b-40d3-ae19-bacbf2709163}</Project>
       <Name>MemoryDataProvider</Name>

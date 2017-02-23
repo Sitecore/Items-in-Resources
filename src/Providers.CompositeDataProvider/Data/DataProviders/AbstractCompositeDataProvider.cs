@@ -32,7 +32,7 @@
     }
 
     [NotNull]
-    protected DataProvider HeadProvider
+    protected internal DataProvider HeadProvider
     {
       get
       {
@@ -44,7 +44,7 @@
     }
 
     [NotNull]
-    protected IDataProviderEx HeadProviderEx
+    protected internal IDataProviderEx HeadProviderEx
     {
       get
       {
