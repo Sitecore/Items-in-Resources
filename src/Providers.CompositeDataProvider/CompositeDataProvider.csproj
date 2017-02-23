@@ -37,9 +37,11 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\DataProviders\AbstractCompositeDataProvider.cs" />
+    <Compile Include="Data\DataProviders\CompositeDataProvider.Custom.ItemIdenticalToDefault.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.Items.ItemData.cs" />
     <Compile Include="Data\DataProviders\CompositeDataProvider.Items.ItemTree.cs" />

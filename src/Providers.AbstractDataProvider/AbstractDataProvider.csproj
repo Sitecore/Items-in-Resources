@@ -45,6 +45,7 @@
     <Compile Include="Data\DataProviders\ReadOnlyDataProvider.NotSupported.cs" />
     <Compile Include="Data\DataProviders\ReadOnlyDataProvider.cs" />
     <Compile Include="Data\ItemIDs.cs" />
+    <Compile Include="Extensions\Database\DatabaseExtensions.DeleteFromCaches.cs" />
     <Compile Include="Extensions\Object\ObjectExtensions.Trace.cs" />
     <Compile Include="Extensions\DataProvider\DataProviderExtensions.SetDatabase.cs" />
     <Compile Include="Extensions\Enumerable\EnumerableExtensions.FirstNotNull.cs" />

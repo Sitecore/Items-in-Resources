@@ -5,7 +5,7 @@
   using Sitecore.Collections;
   using Sitecore.Globalization;
 
-  public abstract partial class ReadOnlyDataProvider : AbstractDataProvider, IDataProviderEx
+  public abstract partial class ReadOnlyDataProvider : AbstractDataProvider
   {                      
     [CanBeNull]
     public abstract IEnumerable<Guid> SelectIDs(string query);

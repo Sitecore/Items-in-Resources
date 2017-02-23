@@ -11,6 +11,7 @@ namespace Sitecore.sitecore.admin
   using Sitecore.Data;
   using Sitecore.Data.DataProviders;
   using Sitecore.Diagnostics;
+  using Sitecore.Extensions.Database;
   using Sitecore.SecurityModel;
 
   public partial class RestoreItemsPage : System.Web.UI.Page
@@ -75,9 +76,10 @@ namespace Sitecore.sitecore.admin
       var itemDefinition = new ItemDefinition(uri.ItemID, string.Empty, Data.ID.Undefined, Data.ID.Undefined);
       var callContext = new CallContext(db.DataManager, 1);
       headProvider.DeleteItem(itemDefinition, callContext);
+      db.RemoveFromCaches(uri.ItemID);
 
       var parentId = dataProvider.GetParentID(itemDefinition, callContext);
-      db.Caches.DataCache.RemoveItemInformation(parentId);
+      db.RemoveFromCaches(parentId);
 
       ListBox.Items.Remove(selectedItem);
     }

@@ -3,6 +3,10 @@
   using System;
   using System.Collections.Generic;
   using Sitecore.Collections;
+  using Sitecore.Configuration;
+  using Sitecore.Data.DataProviders.Sql;
+  using Sitecore.Data.Items;
+  using Sitecore.Extensions.Database;
 
   public sealed class SqlServerDataProvider : Data.SqlServer.SqlServerDataProvider, IDataProviderEx
   {
@@ -28,6 +32,26 @@
     {
       return base.GetChildIdsByName(childName, parentId);
     }
+
+    public void RemoveItemData(Item item)
+    {
+      var itemId = item.ID;
+
+      Factory.GetRetryer().ExecuteNoResult(() =>
+      {
+        using (DataProviderTransaction transaction = this.Api.CreateTransaction())
+        {
+          var query = "DELETE FROM {0}Items{1}\r\n                  WHERE {0}ID{1} = {2}itemId{3}\r\n\r\n                  DELETE FROM {0}SharedFields{1}\r\n                  WHERE {0}ItemId{1} = {2}itemId{3}\r\n\r\n                  DELETE FROM {0}UnversionedFields{1}\r\n                  WHERE {0}ItemId{1} = {2}itemId{3}\r\n\r\n                  DELETE FROM {0}VersionedFields{1}\r\n                  WHERE {0}ItemId{1} = {2}itemId{3}";
+          Api.Execute(query, "itemId", itemId);
+
+          transaction.Complete();
+        }
+      });
+
+      item.Database.RemoveFromCaches(item.ID);
+    }
+
+    public new SqlDataApi Api => base.Api;
 
     public override IDList GetChildIDs(ItemDefinition itemDefinition, CallContext context)
     {

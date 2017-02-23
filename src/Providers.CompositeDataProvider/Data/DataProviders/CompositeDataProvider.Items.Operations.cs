@@ -4,6 +4,7 @@
   using System.Diagnostics;
   using Sitecore.Data.Items;
   using Sitecore.Diagnostics;
+  using Sitecore.Extensions.Database;
   using Sitecore.Extensions.Enumerable;
   using Sitecore.Extensions.Object;
   using Sitecore.SecurityModel;
@@ -245,7 +246,7 @@
           }
           else
           {
-            parent.Database.Caches.DataCache.RemoveItemInformation(item.ID);
+            item.Database.RemoveFromCaches(item.ID);
           }
 
           return result;
