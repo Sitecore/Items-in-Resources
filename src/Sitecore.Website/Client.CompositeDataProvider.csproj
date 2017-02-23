@@ -127,10 +127,9 @@
     <Content Include="App_Config\Include\zzz\ItemIdenticalToDefault.config">
       <SubType>Designer</SubType>
     </Content>
-    <None Include="CleanupDatabases.sql" />
-    <Content Include="packages.config">
+    <None Include="packages.config">
       <SubType>Designer</SubType>
-    </Content>
+    </None>
     <None Include="Web.config" />
   </ItemGroup>
   <ItemGroup />
