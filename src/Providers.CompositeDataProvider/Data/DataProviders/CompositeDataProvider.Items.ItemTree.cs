@@ -60,6 +60,7 @@
       return hasChildren;
     }
 
+    [NotNull]
     public override IDList GetChildIDs(ItemDefinition itemDefinition, CallContext context)
     {
 #if DEBUG

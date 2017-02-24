@@ -2,7 +2,7 @@
 {
   using System.Collections.Generic;
 
-  public class ItemLanguagesData : Dictionary<string, VersionsData>
+  public class VersionsData : Dictionary<int, FieldsData>
   {
   }
 }

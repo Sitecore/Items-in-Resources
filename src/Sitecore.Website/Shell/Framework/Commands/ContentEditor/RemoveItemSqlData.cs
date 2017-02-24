@@ -1,11 +1,8 @@
-﻿using Thread = System.Threading.Thread;
-
-namespace Sitecore.Shell.Framework.Commands.ContentEditor
+﻿namespace Sitecore.Shell.Framework.Commands.ContentEditor
 {                           
   using global::System.Linq; // R# doesn't like without global
   using Sitecore.Data.DataProviders;
   using Sitecore.Data.Items;
-  using Sitecore.Diagnostics;
   using Sitecore.Globalization;
   using Sitecore.Security.Accounts;
   using Sitecore.Shell.Applications.Dialogs.ProgressBoxes;
@@ -13,6 +10,8 @@ namespace Sitecore.Shell.Framework.Commands.ContentEditor
   [UsedImplicitly]
   public class RemoveItemSqlData : Command
   {
+    protected virtual bool Recurse => false;
+
     public override CommandState QueryState(CommandContext context)
     {
       var user = Context.User;
@@ -43,23 +42,18 @@ namespace Sitecore.Shell.Framework.Commands.ContentEditor
       {
         return;
       }
-
-      Process(item);
+            
+      Process(item);    
     }
 
-    protected virtual void Process(Item item)
+    private void Process(Item item)
     {
       var dataProvider = item.Database
         .GetDataProviders()
         .OfType<CompositeDataProvider>()
         .First();
-
-      if (dataProvider.CanBeRemovedFromHead(item))
-      {
-        Log.Audit($"Deleting SQL data of completely default item: {item.Name}, Uri: {item.Uri}", this);
-
-        dataProvider.HeadProviderEx.RemoveItemData(item);
-      }
-    }   
+      
+      dataProvider.TryRemoveItemData(item.ID, Recurse);      
+    }
   }
 }

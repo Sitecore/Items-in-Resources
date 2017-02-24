@@ -102,12 +102,6 @@
     public override FieldList GetItemFields(ItemDefinition itemDefinition, VersionUri versionUri)
     {
       // TODO: change signature to create FieldList once per all data providers
-
-      if (versionUri.Version.Number > 1)
-      {
-        return null;
-      }
-
       if (!DataSet.ItemInfo.ContainsKey(itemDefinition.ID.Guid))
       {
         return null;
@@ -128,8 +122,14 @@
           {
             continue;
           }
+                                   
+          // unversioned first
+          pair.Value.TryGetValue(0)?
+            .ToList()
+            .ForEach(languageField =>
+                list.Add(ID.Parse(languageField.Key), languageField.Value ?? string.Empty));
 
-          pair.Value?
+          pair.Value.TryGetValue(versionUri.Version.Number)?
             .ToList()
             .ForEach(languageField =>
                 list.Add(ID.Parse(languageField.Key), languageField.Value ?? string.Empty));

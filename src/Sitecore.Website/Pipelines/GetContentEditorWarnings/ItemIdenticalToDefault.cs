@@ -30,7 +30,7 @@
         .OfType<CompositeDataProvider>()
         .First();
 
-      if (!dataProvider.CanBeRemovedFromHead(item))
+      if (!dataProvider.CanBeRemovedFromHead(item.ID))
       {
         return;
       }

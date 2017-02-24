@@ -12,6 +12,7 @@
   using Sitecore.Diagnostics.Base.Annotations;
   using Sitecore.Diagnostics.Database.Items;
   using Sitecore.Diagnostics.SqlDataProvider.Items;
+  using Sitecore.Extensions.Dictionary;
 
   public class ConvertCommand
   {
@@ -41,8 +42,10 @@
 
             var context = ItemManager.Initialize(ConnectionString);
 
+            var counter = 0;
+            Console.WriteLine("Processing items...");   
             foreach (var item in GetItems(context))
-            { 
+            {                                              
               // definition
               AddDefinition(item, definitions);
 
@@ -51,14 +54,35 @@
 
               // unversioned and versioned-1 fields
               AddLanguages(item, itemsLanguagesData);
-            }
 
+              Console.WriteLine($"{++counter:D5}. {GetItemPath(definitions, item.ID)}");
+            }                       
+
+            Console.WriteLine("Serializing definitions...");
             Serializer.Serialize(definitionsWriter, definitions);
+
+            Console.WriteLine("Serializing shared data...");
             Serializer.Serialize(sharedDataWriter, ProtobufWrap.Create(itemsSharedData));
+
+            Console.WriteLine("Serializing language data...");
             Serializer.Serialize(languageDataWriter, ProtobufWrap.Create(itemsLanguagesData));
           }
         }
       }
+    }
+
+    private string GetItemPath(ItemsDefinitions definitions, Guid itemId)
+    {
+      if (itemId == Guid.Empty)
+      {
+        return "";
+      }
+
+      var definition = definitions[itemId];
+      var itemName = definition.Name;
+      var parenItemPath = GetItemPath(definitions, definition.ParentID);
+
+      return $"{parenItemPath}/{itemName}";
     }
 
     private IEnumerable<Item> GetItems(ItemContext context)
@@ -68,6 +92,7 @@
       {
         return EnumerateTree(context, root);
       }
+
       return context.GetItems();
     }
 
@@ -83,6 +108,7 @@
           .ToArray()
           .OrderBy(x => x.ID)
           .ToArray();
+
         foreach (var child in children)
         {
           queue.Enqueue(child);
@@ -124,46 +150,61 @@
       foreach (var pair in item.Fields.Unversioned)
       {
         var languageName = pair.Key;
-        FieldsData languageFields;
+        VersionsData languageFields;
         if (!languages.TryGetValue(languageName, out languageFields))
         {
-          languageFields = new FieldsData();
+          languageFields = new VersionsData();
           languages.Add(languageName, languageFields);
+        }
+
+        var unversionedFields = languageFields.TryGetValue(0);
+        if (unversionedFields == null)
+        {
+          unversionedFields = new FieldsData();
+          languageFields.Add(0, unversionedFields);
         }
 
         foreach (var field in pair.Value.OrderBy(x => Guid.Parse(x.Key)).ToArray())
         {
-          languageFields.Add(Guid.Parse(field.Key), field.Value);
+          unversionedFields.Add(Guid.Parse(field.Key), field.Value);
         }
       }
 
       foreach (var pair in item.Fields.Versioned)
       {
         var languageName = pair.Key;
-        FieldsData languageFields;
+        VersionsData languageFields;
         if (!languages.TryGetValue(languageName, out languageFields))
         {
-          languageFields = new FieldsData();
+          languageFields = new VersionsData();
           languages.Add(languageName, languageFields);
-        }
+        }             
 
-        if (!pair.Value.Any())
+        foreach (var versionPair in pair.Value)
         {
-          continue;
-        }
+          var versionNumber = versionPair.Key;
+          var version = languageFields.TryGetValue(versionNumber);
+          if (version == null)
+          {
+            version = new FieldsData();
+            languageFields.Add(versionNumber, version);
+          }
 
-        var lastVersion = pair.Value.Keys.Max(z => z);
-        var versionedFields = pair.Value.Single(x => x.Key == lastVersion).Value;
-        if ((versionedFields == null) || !versionedFields.Any())
-        {
-          continue;
-        }
+          var versionFields = versionPair.Value
+            .Select(x => CreatePair(Guid.Parse(x.Key), x.Value))
+            .OrderBy(x => x.Key);
 
-        foreach (var field in versionedFields.OrderBy(x => Guid.Parse(x.Key)).ToArray())
-        {
-          languageFields.Add(Guid.Parse(field.Key), field.Value);
-        }
+          foreach (var field in versionFields)
+          {
+            version.Add(field.Key, field.Value);
+          }
+        }               
       }
+    }
+
+    private static KeyValuePair<TK, TV> CreatePair<TK, TV>(TK parse, TV argValue)
+    {
+      return new KeyValuePair<TK, TV>(parse, argValue);
     }
 
     private static bool Try([NotNull] Action action)

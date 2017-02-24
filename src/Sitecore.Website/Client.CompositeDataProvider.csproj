@@ -54,7 +54,7 @@
     <Compile Include="Project.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shell\Framework\Commands\ContentEditor\RemoveItemSqlDataWithDescendants.cs" />
-    <Compile Include="Shell\Framework\Commands\ContentEditor\RemoveSqlData.cs" />
+    <Compile Include="Shell\Framework\Commands\ContentEditor\RemoveItemSqlData.cs" />
     <Compile Include="sitecore\admin\restore-items.aspx.cs">
       <DependentUpon>restore-items.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

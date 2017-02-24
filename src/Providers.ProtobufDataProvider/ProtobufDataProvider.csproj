@@ -54,6 +54,7 @@
     <Compile Include="Data\DataFormat\ItemsDefinitions.cs" />
     <Compile Include="Data\DataFormat\ItemsLanguagesData.cs" />
     <Compile Include="Data\DataFormat\SharedData.cs" />
+    <Compile Include="Data\DataFormat\VersionsData.cs" />
     <Compile Include="Data\DataProviders\ProtobufDataProvider.cs" />
     <Compile Include="Data\ItemInfo.cs" />
     <Compile Include="Data\ItemPathResolver.cs" />

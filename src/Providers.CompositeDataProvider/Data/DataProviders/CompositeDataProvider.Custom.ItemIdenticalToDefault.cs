@@ -1,25 +1,76 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using System.Linq;
-  using Sitecore.Data.Items;
   using Sitecore.Diagnostics;
+  using Sitecore.Extensions.Database;
   using Sitecore.Extensions.Enumerable;
+  using Sitecore.SecurityModel;
 
   partial class CompositeDataProvider
-  {                  
-    public bool CanBeRemovedFromHead([NotNull] Item item)
+  {
+    public bool TryRemoveItemData(ID itemId, bool recurse = false)
     {
-      Assert.ArgumentNotNull(item, nameof(item));
+      using (var transaction = HeadProviderEx.OpenTransaction())
+      {
+        using (new SecurityDisabler())
+        {
+          var result = TryRemoveItemDataInner(itemId, recurse);
 
-      var dataManager = item.Database.DataManager;
-      if (HeadProvider.GetItemDefinition(item.ID, new CallContext(dataManager, 1)) == null)
+          transaction.Complete();
+
+          return result;
+        }        
+      }
+    }
+
+    private bool TryRemoveItemDataInner(ID itemId, bool recurse)
+    {
+      var itemDefinition = new ItemDefinition(itemId, string.Empty, ID.Undefined, ID.Undefined);
+      var childrenIds = recurse ? GetChildrenIds(itemDefinition) : new ID[0];
+
+      var result = false;
+      if (CanBeRemovedFromHead(itemId))
+      {
+        HeadProviderEx.RemoveItemData(itemId);
+        Database.RemoveFromCaches(itemId);
+
+        result = true;
+      }
+
+      foreach (var childId in childrenIds)
+      {
+        result |= TryRemoveItemDataInner(childId, recurse);
+      }
+
+      return result;
+    }
+
+    private ID[] GetChildrenIds(ItemDefinition itemDefinition)
+    {
+      var dataManager = Database.DataManager;
+      var childrenIds = GetChildIDs(itemDefinition, new CallContext(dataManager, 1)).Cast<ID>().ToArray();
+
+      return childrenIds;
+    }
+
+    public bool CanBeRemovedFromHead([NotNull] ID itemId)
+    {
+      Assert.ArgumentNotNull(itemId, nameof(itemId));
+
+      var dataManager = Database.DataManager;
+      if (HeadProvider.GetItemDefinition(itemId, new CallContext(dataManager, 1)) == null)
       {
         return false;
       }
 
-      foreach (var version in item.Versions.GetVersions(true))
+      if (ReadOnlyProviders.All(x => x.GetItemDefinition(itemId) == null))
       {
-        var itemDefinition = new ItemDefinition(version.ID, version.Name, version.TemplateID, version.BranchId);
+        return false;
+      }
+
+      var itemDefinition = new ItemDefinition(itemId, string.Empty, ID.Undefined, ID.Undefined);
+      foreach (VersionUri version in GetItemVersions(itemDefinition, new CallContext(dataManager, 1)))
+      {
         var versionUri = new VersionUri(version.Language, version.Version);
 
         var actualFields = HeadProvider.GetItemFields(itemDefinition, versionUri, new CallContext(dataManager, 1));
@@ -33,7 +84,7 @@
         foreach (var i in actualFields.FieldValues.Keys.Cast<ID>())
         {
           if (
-            !defaultFields.FieldValues.Contains(i) || 
+            !defaultFields.FieldValues.Contains(i) ||
             actualFields[i] != defaultFields[i] ||
             false)
           {
@@ -44,7 +95,7 @@
         foreach (var i in defaultFields.FieldValues.Keys.Cast<ID>())
         {
           if (
-            !actualFields.FieldValues.Contains(i) || 
+            !actualFields.FieldValues.Contains(i) ||
             actualFields[i] != defaultFields[i] ||
             false)
           {
