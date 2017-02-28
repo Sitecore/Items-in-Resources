@@ -10,6 +10,6 @@ using System.Runtime.InteropServices;
 
 [assembly: InternalsVisibleTo("Sitecore.Client.CompositeDataProvider")]
 
-[assembly: AssemblyVersion("0.0.1.1")]
-[assembly: AssemblyFileVersion("0.0.1.1")]
-[assembly: AssemblyInformationalVersion("0.0.1.1")]
+[assembly: AssemblyVersion("0.0.1.2")]
+[assembly: AssemblyFileVersion("0.0.1.2")]
+[assembly: AssemblyInformationalVersion("0.0.1.2")]
