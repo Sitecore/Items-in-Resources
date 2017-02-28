@@ -37,8 +37,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
-      <HintPath>..\packages\SC.protobuf-net.8.2.0\lib\protobuf-net.dll</HintPath>
-      <Private>False</Private>
+      <HintPath>..\packages\SC.protobuf-net.8.2.2\lib\protobuf-net.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.XML" />
