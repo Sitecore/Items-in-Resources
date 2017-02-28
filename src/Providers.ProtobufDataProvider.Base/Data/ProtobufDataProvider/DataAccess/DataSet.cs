@@ -1,16 +1,17 @@
-namespace Sitecore.Data.DataAccess
+namespace Sitecore.Data.ProtobufDataProvider.DataAccess
 {
   using System.IO;
   using ProtoBuf;
-  using Sitecore.Diagnostics;
+  using Sitecore.Diagnostics.Base;
+  using Sitecore.Diagnostics.Base.Annotations;
 
-  public class DataSet
+  public class ItemsDataSet
   {
     [NotNull]
     public readonly ChildrenDataSet Children;
 
     [NotNull]
-    public readonly ItemInfoSet ItemInfo;
+    public readonly ItemDataRecordSet ItemDataRecord;
 
     [NotNull]
     public readonly LanguageDataSet LanguageData;
@@ -18,21 +19,21 @@ namespace Sitecore.Data.DataAccess
     [NotNull]
     public readonly SharedDataSet SharedData;
 
-    public DataSet(FileInfo definitions, FileInfo sharedData, FileInfo languageData) : this(OpenDefinitions(definitions), OpenSharedData(sharedData), OpenLanguageData(languageData))
+    public ItemsDataSet(FileInfo definitions, FileInfo sharedData, FileInfo languageData) : this(OpenDefinitions(definitions), OpenSharedData(sharedData), OpenLanguageData(languageData))
     {
     }
 
-    public DataSet(Stream definitions, Stream sharedData, Stream languageData)
+    public ItemsDataSet(Stream definitions, Stream sharedData, Stream languageData)
     {
       using (definitions)
       {
-        var info = Serializer.Deserialize<ItemInfoSet>(definitions);
+        var info = Serializer.Deserialize<ItemDataRecordSet>(definitions);
         Assert.IsNotNull(info, nameof(info));
 
-        ItemInfo = info;
+        ItemDataRecord = info;
       }
 
-      Children = new ChildrenDataSet(ItemInfo);
+      Children = new ChildrenDataSet(ItemDataRecord);
 
       using (sharedData)
       {
@@ -65,9 +66,9 @@ namespace Sitecore.Data.DataAccess
       return definitions.OpenRead();
     }
 
-    public static DataSet OpenRead(Stream definitions, Stream sharedData, Stream langData)
+    public static ItemsDataSet OpenRead(Stream definitions, Stream sharedData, Stream langData)
     {
-      return new DataSet(definitions, sharedData, langData);
+      return new ItemsDataSet(definitions, sharedData, langData);
     }
   }
 }

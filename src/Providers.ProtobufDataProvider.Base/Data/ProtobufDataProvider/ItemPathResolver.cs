@@ -1,7 +1,7 @@
-﻿namespace Sitecore.Data
+﻿namespace Sitecore.Data.ProtobufDataProvider
 {
   using System;
-  using Sitecore.Data.DataAccess;
+  using Sitecore.Data.ProtobufDataProvider.DataAccess;
   using Sitecore.Extensions.Dictionary;
 
   public static class ItemPathResolver
@@ -35,7 +35,7 @@
       if (itemPath.Length == "/sitecore".Length)
       {
         id = ItemIDs.RootItemID;
-        return childrenDataSet.ContainsKey(ItemIDs.RootItemID);
+        return true; //childrenDataSet.ContainsKey(ItemIDs.RootItemID);
       }
 
       if (itemPath["/sitecore".Length] != '/')

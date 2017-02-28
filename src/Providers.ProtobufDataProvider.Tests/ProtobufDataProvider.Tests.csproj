@@ -68,9 +68,9 @@
       <Project>{7E84783D-1DB2-4DFC-9229-380AE8066E57}</Project>
       <Name>AbstractDataProvider</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Providers.ProtobufDataProvider\ProtobufDataProvider.csproj">
-      <Project>{97504e1f-1184-4731-90f0-ea9c07587198}</Project>
-      <Name>ProtobufDataProvider</Name>
+    <ProjectReference Include="..\Providers.ProtobufDataProvider.Base\ProtobufDataProvider.Base.csproj">
+      <Project>{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}</Project>
+      <Name>ProtobufDataProvider.Base</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{71E84798-1F43-4E28-AEB3-EBF2FC045561}</ProjectGuid>
+    <ProjectGuid>{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MemoryProviderTests</RootNamespace>
-    <AssemblyName>Sitecore.Data.DataProviders.CompositeDataProvider.Tests</AssemblyName>
+    <RootNamespace>Sitecore</RootNamespace>
+    <AssemblyName>Sitecore.Data.DataProviders.ProtobufDataProvider.Base</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -31,15 +31,38 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Sitecore.Kernel, Version=10.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SC.Sitecore.Kernel.8.2.2\lib\Sitecore.Kernel.dll</HintPath>
+    <Reference Include="protobuf-net, Version=2.0.0.668, Culture=neutral, PublicKeyToken=257b51d87d2e4d67, processorArchitecture=MSIL">
+      <HintPath>..\packages\SC.protobuf-net.8.2.2\lib\protobuf-net.dll</HintPath>
       <Private>False</Private>
+    </Reference>
+    <Reference Include="Sitecore.Diagnostics.Base, Version=1.0.0.0, Culture=neutral, PublicKeyToken=2a430da507ea8b02, processorArchitecture=MSIL">
+      <HintPath>..\packages\Sitecore.Diagnostics.Base.1.0.0.24\lib\net35\Sitecore.Diagnostics.Base.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Data\ProtobufDataProvider\DataAccess\ChildrenDataSet.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataAccess\DataSet.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataAccess\DefinitionsDataSet.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataAccess\LanguageDataSet.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataAccess\SharedDataSet.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\FieldsData.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemLanguagesData.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemsDefinitions.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemsLanguagesData.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\SharedData.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\VersionsData.cs" />
+    <Compile Include="Data\ProtobufDataProvider\ItemRecord.cs" />
+    <Compile Include="Data\ProtobufDataProvider\ItemPathResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Providers.AbstractDataProvider\AbstractDataProvider.csproj">
+      <Project>{7e84783d-1db2-4dfc-9229-380ae8066e57}</Project>
+      <Name>AbstractDataProvider</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

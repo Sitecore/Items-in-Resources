@@ -1,10 +1,10 @@
-namespace Sitecore.Data
+namespace Sitecore.Data.ProtobufDataProvider
 {
   using System;
   using ProtoBuf;
 
   [ProtoContract]
-  public sealed class ItemInfo
+  public sealed class ItemRecord
   {
     [ProtoMember(1)]
     public Guid ID;   
@@ -13,7 +13,7 @@ namespace Sitecore.Data
     public string Name;
 
     [ProtoMember(3)]
-    public Guid ParentID { get; set; }
+    public Guid ParentID;
 
     [ProtoMember(4)]
     public Guid TemplateID;

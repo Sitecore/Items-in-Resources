@@ -41,29 +41,19 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Data\DataAccess\ChildrenDataSet.cs" />
-    <Compile Include="Data\DataAccess\DataSet.cs" />
-    <Compile Include="Data\DataAccess\DefinitionsDataSet.cs" />
-    <Compile Include="Data\DataAccess\LanguageDataSet.cs" />
-    <Compile Include="Data\DataAccess\SharedDataSet.cs" />
-    <Compile Include="Data\DataFormat\FieldsData.cs" />
-    <Compile Include="Data\DataFormat\ItemLanguagesData.cs" />
-    <Compile Include="Data\DataFormat\ItemsDefinitions.cs" />
-    <Compile Include="Data\DataFormat\ItemsLanguagesData.cs" />
-    <Compile Include="Data\DataFormat\SharedData.cs" />
-    <Compile Include="Data\DataFormat\VersionsData.cs" />
     <Compile Include="Data\DataProviders\ProtobufDataProvider.cs" />
-    <Compile Include="Data\ItemInfo.cs" />
-    <Compile Include="Data\ItemPathResolver.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Providers.AbstractDataProvider\AbstractDataProvider.csproj">
       <Project>{7e84783d-1db2-4dfc-9229-380ae8066e57}</Project>
       <Name>AbstractDataProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Providers.ProtobufDataProvider.Base\ProtobufDataProvider.Base.csproj">
+      <Project>{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}</Project>
+      <Name>ProtobufDataProvider.Base</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

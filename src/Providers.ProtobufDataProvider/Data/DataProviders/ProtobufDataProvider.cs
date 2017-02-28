@@ -6,8 +6,8 @@
   using System.Linq;
   using System.Text.RegularExpressions;
   using Sitecore.Collections;
-  using Sitecore.Data.DataAccess;
-  using Sitecore.Data.DataFormat;
+  using Sitecore.Data.ProtobufDataProvider;
+  using Sitecore.Data.ProtobufDataProvider.DataAccess;
   using Sitecore.Diagnostics;
   using Sitecore.Exceptions;
   using Sitecore.Extensions.Dictionary;
@@ -17,10 +17,7 @@
   {
     private static readonly Regex DescendantsQueryRegex = new Regex(@"^fast\://\*\[([^\]]+)\]$", RegexOptions.Compiled);
 
-    [NotNull]
-    private readonly string DatabaseName;
-
-    private readonly DataSet DataSet;
+    private ItemsDataSet DataSet { get; }
 
     [UsedImplicitly]
     public ProtobufDataProvider([NotNull] string databaseName, [NotNull] string definitionsFilePath, [NotNull] string sharedDataFilePath, [NotNull] string languageDataFilePath)
@@ -30,15 +27,14 @@
       Assert.ArgumentNotNullOrEmpty(sharedDataFilePath, nameof(sharedDataFilePath));
       Assert.ArgumentNotNullOrEmpty(languageDataFilePath, nameof(languageDataFilePath));
 
-      DatabaseName = databaseName;
-      DataSet = new DataSet(new FileInfo(MainUtil.MapPath(definitionsFilePath)), new FileInfo(MainUtil.MapPath(sharedDataFilePath)), new FileInfo(MainUtil.MapPath(languageDataFilePath)));
+      DataSet = new ItemsDataSet(new FileInfo(MainUtil.MapPath(definitionsFilePath)), new FileInfo(MainUtil.MapPath(sharedDataFilePath)), new FileInfo(MainUtil.MapPath(languageDataFilePath)));
     }
 
     public override ItemDefinition GetItemDefinition(ID itemId)
     {
       Assert.ArgumentNotNull(itemId, nameof(itemId));
 
-      ItemInfo item = DataSet.ItemInfo.TryGetValue(itemId.Guid);
+      ItemRecord item = DataSet.ItemDataRecord.TryGetValue(itemId.Guid);
       if (item == null)
       {
         return null;
@@ -70,7 +66,7 @@
 
     public override ID GetParentID(ItemDefinition itemDefinition)
     {
-      var item = DataSet.ItemInfo.TryGetValue(itemDefinition.ID.Guid);
+      var item = DataSet.ItemDataRecord.TryGetValue(itemDefinition.ID.Guid);
       if (item == null)
       {
         return null;
@@ -102,7 +98,7 @@
     public override FieldList GetItemFields(ItemDefinition itemDefinition, VersionUri versionUri)
     {
       // TODO: change signature to create FieldList once per all data providers
-      if (!DataSet.ItemInfo.ContainsKey(itemDefinition.ID.Guid))
+      if (!DataSet.ItemDataRecord.ContainsKey(itemDefinition.ID.Guid))
       {
         return null;
       }
@@ -150,7 +146,7 @@
       if (desc.Success)
       {
         var conditionsQueryGroup = desc.Groups[1];
-        var items = (IEnumerable<ItemInfo>)DataSet.ItemInfo.Values;
+        var items = (IEnumerable<ItemRecord>)DataSet.ItemDataRecord.Values;
         if (conditionsQueryGroup.Success)
         {
           var conditionsQuery = conditionsQueryGroup.Value;
@@ -199,7 +195,7 @@
     public override IEnumerable<Guid> GetTemplateItemIds()
     {
       var templateId = TemplateIDs.Template.Guid;
-      var templates = DataSet.ItemInfo.Values
+      var templates = DataSet.ItemDataRecord.Values
         .Where(x => x.TemplateID == templateId)
         .Select(x => x.ID);
 
@@ -231,7 +227,7 @@
     {
       var dictionaryEntryTemplateId = TemplateIDs.DictionaryEntry.Guid;
 
-      return DataSet.ItemInfo.Values.Count(x => x.TemplateID == dictionaryEntryTemplateId);
+      return DataSet.ItemDataRecord.Values.Count(x => x.TemplateID == dictionaryEntryTemplateId);
     }
   }
 }

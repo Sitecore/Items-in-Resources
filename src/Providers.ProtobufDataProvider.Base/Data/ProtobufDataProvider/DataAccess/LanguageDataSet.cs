@@ -1,9 +1,9 @@
-namespace Sitecore.Data.DataAccess
+namespace Sitecore.Data.ProtobufDataProvider.DataAccess
 {
   using System;
   using System.IO;
   using ProtoBuf;
-  using Sitecore.Data.DataFormat;
+  using Sitecore.Data.ProtobufDataProvider.DataFormat;
 
   public class LanguageDataSet
   {

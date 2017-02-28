@@ -7,7 +7,8 @@
   using System.Linq;
   using ProtoBuf;
   using Sitecore.Data;
-  using Sitecore.Data.DataFormat;
+  using Sitecore.Data.ProtobufDataProvider;
+  using Sitecore.Data.ProtobufDataProvider.DataFormat;
   using Sitecore.Diagnostics.Base;
   using Sitecore.Diagnostics.Base.Annotations;
   using Sitecore.Diagnostics.Database.Items;
@@ -118,14 +119,14 @@
       }
     }
 
-    private static void AddDefinition(Item item, Dictionary<Guid, ItemInfo> definitions)
+    private static void AddDefinition(Item item, Dictionary<Guid, ItemRecord> definitions)
     {
-      var definition = new ItemInfo
+      var definition = new ItemRecord
       {
         ID = item.ID,
         Name = item.Name,
         ParentID = item.ParentID,
-        TemplateID = item.TemplateID
+        TemplateID = item.TemplateID,
       };
 
       definitions.Add(item.ID, definition);

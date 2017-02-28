@@ -1,4 +1,4 @@
-namespace Sitecore.Data.DataAccess
+namespace Sitecore.Data.ProtobufDataProvider.DataAccess
 {
   using System;
   using System.Collections.Generic;

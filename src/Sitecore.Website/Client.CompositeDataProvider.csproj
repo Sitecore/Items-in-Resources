@@ -118,6 +118,10 @@
       <Project>{361cc68c-c85b-40d3-ae19-bacbf2709163}</Project>
       <Name>MemoryDataProvider</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Providers.ProtobufDataProvider.Base\ProtobufDataProvider.Base.csproj">
+      <Project>{4fa9e434-27e6-42ed-99c7-6a8fbd287cb4}</Project>
+      <Name>ProtobufDataProvider.Base</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Providers.ProtobufDataProvider\ProtobufDataProvider.csproj">
       <Project>{97504e1f-1184-4731-90f0-ea9c07587198}</Project>
       <Name>ProtobufDataProvider</Name>

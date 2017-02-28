@@ -2,7 +2,6 @@
 {
   using Sitecore.Caching;
   using Sitecore.Data;
-  using Sitecore.Data.DataProviders;
 
   public static class DatabaseExtensions
   {

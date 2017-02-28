@@ -1,10 +1,8 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using System.Collections.Generic;
-  using System.Diagnostics;
   using System.Linq;
   using Sitecore.Collections;
-  using Sitecore.Extensions.Object;
   using Sitecore.Globalization;
 
   public partial class CompositeDataProvider

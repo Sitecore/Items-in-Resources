@@ -69,12 +69,12 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Providers.AbstractDataProvider\AbstractDataProvider.csproj">
-      <Project>{7E84783D-1DB2-4DFC-9229-380AE8066E57}</Project>
+      <Project>{7e84783d-1db2-4dfc-9229-380ae8066e57}</Project>
       <Name>AbstractDataProvider</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Providers.ProtobufDataProvider\ProtobufDataProvider.csproj">
-      <Project>{97504E1F-1184-4731-90F0-EA9C07587198}</Project>
-      <Name>ProtobufDataProvider</Name>
+    <ProjectReference Include="..\Providers.ProtobufDataProvider.Base\ProtobufDataProvider.Base.csproj">
+      <Project>{4fa9e434-27e6-42ed-99c7-6a8fbd287cb4}</Project>
+      <Name>ProtobufDataProvider.Base</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

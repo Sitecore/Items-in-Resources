@@ -2,7 +2,6 @@
 *.user
 desktop.ini
 src/.vs/
-src/packages/
 src/Providers.AbstractDataProvider.Tests/bin/
 src/Providers.AbstractDataProvider.Tests/obj/
 src/Providers.AbstractDataProvider/bin/
@@ -15,6 +14,8 @@ src/Providers.MemoryDataProvider.Tests/bin/
 src/Providers.MemoryDataProvider.Tests/obj/
 src/Providers.MemoryDataProvider/bin/
 src/Providers.MemoryDataProvider/obj/
+src/Providers.ProtobufDataProvider.Base/bin/
+src/Providers.ProtobufDataProvider.Base/obj/
 src/Providers.ProtobufDataProvider.Tests/bin/
 src/Providers.ProtobufDataProvider.Tests/obj/
 src/Providers.ProtobufDataProvider/bin/
@@ -25,3 +26,4 @@ src/Sitecore.ProtobufConvert/bin/
 src/Sitecore.ProtobufConvert/obj/
 src/Sitecore.Website/bin/
 src/Sitecore.Website/obj/
+src/packages/

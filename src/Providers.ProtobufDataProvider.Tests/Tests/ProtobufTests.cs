@@ -6,7 +6,7 @@ namespace Sitecore.Tests
   using System.Linq;
   using Microsoft.VisualStudio.TestTools.UnitTesting;
   using ProtoBuf;
-  using Sitecore.Data;
+  using Sitecore.Data.ProtobufDataProvider;
 
   [TestClass]
   public class ProtobufTests
@@ -16,7 +16,7 @@ namespace Sitecore.Tests
     {
       // arrange
       var stream = new MemoryStream();
-      var source = new ItemInfo
+      var source = new ItemRecord
       {
         Name = "Test",
         TemplateID = new Guid()
@@ -25,7 +25,7 @@ namespace Sitecore.Tests
       // act
       Serializer.Serialize(stream, source);
       stream.Seek(0, SeekOrigin.Begin);
-      var copy = Serializer.Deserialize<ItemInfo>(stream);
+      var copy = Serializer.Deserialize<ItemRecord>(stream);
 
       // assert
       Assert.AreNotEqual(source, copy);

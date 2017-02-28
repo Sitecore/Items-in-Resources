@@ -3,10 +3,7 @@
   using System;
   using System.Collections.Generic;
   using Sitecore.Collections;
-  using Sitecore.Configuration;
   using Sitecore.Data.DataProviders.Sql;
-  using Sitecore.Data.Items;
-  using Sitecore.Extensions.Database;
 
   public sealed class SqlServerDataProvider : Data.SqlServer.SqlServerDataProvider, IDataProviderEx
   {

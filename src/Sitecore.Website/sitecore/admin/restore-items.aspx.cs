@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Sitecore.sitecore.admin
@@ -10,7 +7,6 @@ namespace Sitecore.sitecore.admin
   using Sitecore.Configuration;
   using Sitecore.Data;
   using Sitecore.Data.DataProviders;
-  using Sitecore.Diagnostics;
   using Sitecore.Extensions.Database;
   using Sitecore.SecurityModel;
 

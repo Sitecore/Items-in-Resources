@@ -1,4 +1,4 @@
-﻿namespace Sitecore.Data.DataFormat
+﻿namespace Sitecore.Data.ProtobufDataProvider.DataFormat
 {
   using System.Collections.Generic;
 

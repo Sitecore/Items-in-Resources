@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MemoryDataProvider.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbstractDataProvider", "Providers.AbstractDataProvider\AbstractDataProvider.csproj", "{7E84783D-1DB2-4DFC-9229-380AE8066E57}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProtobufDataProvider.Base", "Providers.ProtobufDataProvider.Base\ProtobufDataProvider.Base.csproj", "{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -89,6 +91,10 @@ Global
 		{7E84783D-1DB2-4DFC-9229-380AE8066E57}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E84783D-1DB2-4DFC-9229-380AE8066E57}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E84783D-1DB2-4DFC-9229-380AE8066E57}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -109,5 +115,6 @@ Global
 		{361CC68C-C85B-40D3-AE19-BACBF2709163} = {D83B4BA2-067F-4866-B55E-DA5C6158B17E}
 		{BE0F9EF3-6AFC-4816-AEAB-4759D730D595} = {D83B4BA2-067F-4866-B55E-DA5C6158B17E}
 		{7E84783D-1DB2-4DFC-9229-380AE8066E57} = {D7981AE0-094A-48D0-8F5E-A72949A5D039}
+		{4FA9E434-27E6-42ED-99C7-6A8FBD287CB4} = {87E49596-5752-47B3-B95A-E9059053CE2C}
 	EndGlobalSection
 EndGlobal
