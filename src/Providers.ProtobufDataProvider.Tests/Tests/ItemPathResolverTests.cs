@@ -5,6 +5,7 @@
   using Microsoft.VisualStudio.TestTools.UnitTesting;
   using Sitecore.Data.ProtobufDataProvider;
   using Sitecore.Data.ProtobufDataProvider.DataAccess;
+  using Sitecore.Data.ProtobufDataProvider.DataFormat;
 
   [TestClass]
   public class ItemPathResolverTests
@@ -13,7 +14,7 @@
     public void TesT1()
     {
       var root = new ItemRecord { ID = ItemIDs.RootItemID, Name = "Sitecore" };
-      var namesCache = new ChildrenDataSet(new ItemDataRecordSet(root));
+      var namesCache = new ChildrenDataSet(new ItemDefinitions(root));
 
       // act
       Guid id;
@@ -27,7 +28,7 @@
     public void TesT2()
     {
       var root = new ItemRecord { ID = ItemIDs.RootItemID, Name = "Sitecore" };
-      var namesCache = new ChildrenDataSet(new ItemDataRecordSet(root));
+      var namesCache = new ChildrenDataSet(new ItemDefinitions(root));
 
       // act
       Guid id;
@@ -41,7 +42,7 @@
     public void TesT22()
     {
       var root = new ItemRecord { ID = ItemIDs.RootItemID, Name = "Sitecore" };
-      var namesCache = new ChildrenDataSet(new ItemDataRecordSet(root));
+      var namesCache = new ChildrenDataSet(new ItemDefinitions(root));
 
       // act
       Guid id;
@@ -56,7 +57,7 @@
     {
       var root = new ItemRecord { ID = ItemIDs.RootItemID, Name = "Sitecore" };
       var content = new ItemRecord { ID = Guid.NewGuid(), Name = "content", ParentID = root.ID };
-      var namesCache = new ChildrenDataSet(new ItemDataRecordSet(root, content));
+      var namesCache = new ChildrenDataSet(new ItemDefinitions(root, content));
 
       // act
       Guid id;
@@ -71,7 +72,7 @@
     {
       var root = new ItemRecord { ID = ItemIDs.RootItemID, Name = "Sitecore" };
       var content = new ItemRecord { ID = Guid.NewGuid(), Name = "content", ParentID = root.ID };
-      var namesCache = new ChildrenDataSet(new ItemDataRecordSet(root, content));
+      var namesCache = new ChildrenDataSet(new ItemDefinitions(root, content));
 
       // act
       Guid id;
@@ -88,7 +89,7 @@
       var content1 = new ItemRecord { ID = Guid.NewGuid(), Name = "content", ParentID = root.ID };
       var content2 = new ItemRecord { ID = Guid.NewGuid(), Name = "content", ParentID = root.ID };
       var home = new ItemRecord { ID = Guid.NewGuid(), Name = "Home", ParentID = content2.ID };
-      var namesCache = new ChildrenDataSet(new ItemDataRecordSet(root, content1, content2, home));
+      var namesCache = new ChildrenDataSet(new ItemDefinitions(root, content1, content2, home));
 
       // act
       Guid id;

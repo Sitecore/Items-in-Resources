@@ -1,7 +1,9 @@
 ﻿namespace Sitecore.Data.DataProviders
 {
   using System;
+  using System.Diagnostics;
   using System.IO;
+  using Sitecore.Extensions.Object;
 
   public partial class CompositeDataProvider
   {

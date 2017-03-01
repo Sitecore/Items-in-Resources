@@ -31,48 +31,41 @@
       Assert.ArgumentCondition(Directory.Exists(OutputDirectory), nameof(OutputDirectory), $"The specified directory does not exist: {OutputDirectory}");
       Assert.ArgumentCondition(Try(() => new SqlConnectionStringBuilder(ConnectionString)), nameof(ConnectionString), "$The specified connection string");
 
-      using (var definitionsWriter = File.OpenWrite(Path.Combine(OutputDirectory, $"{DatabaseName}.definitions.dat")))
+      using (var definitionsWriter = File.OpenWrite(Path.Combine(OutputDirectory, $"{DatabaseName}.items.dat")))
       {
-        using (var sharedDataWriter = File.OpenWrite(Path.Combine(OutputDirectory, $"{DatabaseName}.data.shared.dat")))
+        var definitions = new ItemDefinitions();
+        var itemsSharedData = new ItemsSharedData();
+        var itemsLanguagesData = new ItemsLanguagesData();
+
+        var context = ItemManager.Initialize(ConnectionString);
+
+        var counter = 0;
+        Console.WriteLine("Processing items...");
+        foreach (var item in GetItems(context))
         {
-          using (var languageDataWriter = File.OpenWrite(Path.Combine(OutputDirectory, $"{DatabaseName}.data.lang.dat")))
-          {
-            var definitions = new ItemsDefinitions();
-            var itemsSharedData = new ItemsSharedData();
-            var itemsLanguagesData = new ItemsLanguagesData();
+          // definition
+          AddDefinition(item, definitions);
 
-            var context = ItemManager.Initialize(ConnectionString);
+          // shared fields
+          AddShared(item, itemsSharedData);
 
-            var counter = 0;
-            Console.WriteLine("Processing items...");   
-            foreach (var item in GetItems(context))
-            {                                              
-              // definition
-              AddDefinition(item, definitions);
+          // unversioned and versioned-1 fields
+          AddLanguages(item, itemsLanguagesData);
 
-              // shared fields
-              AddShared(item, itemsSharedData);
-
-              // unversioned and versioned-1 fields
-              AddLanguages(item, itemsLanguagesData);
-
-              Console.WriteLine($"{++counter:D5}. {GetItemPath(definitions, item.ID)}");
-            }                       
-
-            Console.WriteLine("Serializing definitions...");
-            Serializer.Serialize(definitionsWriter, definitions);
-
-            Console.WriteLine("Serializing shared data...");
-            Serializer.Serialize(sharedDataWriter, ProtobufWrap.Create(itemsSharedData));
-
-            Console.WriteLine("Serializing language data...");
-            Serializer.Serialize(languageDataWriter, ProtobufWrap.Create(itemsLanguagesData));
-          }
+          Console.WriteLine($"{++counter:D5}. {GetItemPath(definitions, item.ID)}");
         }
+
+        Console.WriteLine("Serializing...");
+        Serializer.Serialize(definitionsWriter, new ItemsData
+        {
+          Definitions = definitions,
+          SharedData = itemsSharedData,
+          LanguageData = itemsLanguagesData
+        });
       }
     }
 
-    private string GetItemPath(ItemsDefinitions definitions, Guid itemId)
+    private string GetItemPath(ItemDefinitions definitions, Guid itemId)
     {
       if (itemId == Guid.Empty)
       {
@@ -119,7 +112,7 @@
       }
     }
 
-    private static void AddDefinition(Item item, Dictionary<Guid, ItemRecord> definitions)
+    private static void AddDefinition(Item item, ItemDefinitions definitions)
     {
       var definition = new ItemRecord
       {
@@ -179,9 +172,9 @@
         {
           languageFields = new VersionsData();
           languages.Add(languageName, languageFields);
-        }             
+        }
 
-        foreach (var versionPair in pair.Value)
+        foreach (var versionPair in pair.Value)                         
         {
           var versionNumber = versionPair.Key;
           var version = languageFields.TryGetValue(versionNumber);

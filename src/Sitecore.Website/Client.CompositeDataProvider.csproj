@@ -73,35 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Config\Include\zzz\DataProviders.Core.config" />
-    <Content Include="App_Config\Include\zzz\DataProviders.Web.config" />
     <Content Include="App_Config\Include\zzz\DataProviders.config" />
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\core.data.lang.dat">
-      <Link>App_Data\core.data.lang.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\core.data.shared.dat">
-      <Link>App_Data\core.data.shared.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\core.definitions.dat">
-      <Link>App_Data\core.definitions.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\master.data.lang.dat">
-      <Link>App_Data\master.data.lang.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\master.data.shared.dat">
-      <Link>App_Data\master.data.shared.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\master.definitions.dat">
-      <Link>App_Data\master.definitions.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\web.data.lang.dat">
-      <Link>App_Data\web.data.lang.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\web.data.shared.dat">
-      <Link>App_Data\web.data.shared.dat</Link>
-    </Content>
-    <Content Include="..\..\data\Providers.ProtobufDataProvider\web.definitions.dat">
-      <Link>App_Data\web.definitions.dat</Link>
-    </Content>
     <Content Include="sitecore\admin\restore-items.aspx" />
   </ItemGroup>
   <ItemGroup>
@@ -138,6 +110,12 @@
   <ItemGroup>
     <Content Include="App_Config\Include\zzz\ItemIdenticalToDefault.config">
       <SubType>Designer</SubType>
+    </Content>
+    <Content Include="..\..\data\Providers.ProtobufDataProvider\core.items.dat">
+      <Link>App_Data\core.items.dat</Link>
+    </Content>
+    <Content Include="..\..\data\Providers.ProtobufDataProvider\master.items.dat">
+      <Link>App_Data\master.items.dat</Link>
     </Content>
     <None Include="packages.config">
       <SubType>Designer</SubType>

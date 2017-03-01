@@ -74,35 +74,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\core.data.lang.dat">
-      <Link>Resources\core.data.lang.dat</Link>
+    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\core.items.dat">
+      <Link>Resources\core.items.dat</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\core.data.shared.dat">
-      <Link>Resources\core.data.shared.dat</Link>
+    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\master.items.dat">
+      <Link>Resources\master.items.dat</Link>
     </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\core.definitions.dat">
-      <Link>Resources\core.definitions.dat</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\master.data.lang.dat">
-      <Link>Resources\master.data.lang.dat</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\master.data.shared.dat">
-      <Link>Resources\master.data.shared.dat</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\master.definitions.dat">
-      <Link>Resources\master.definitions.dat</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\web.data.lang.dat">
-      <Link>Resources\web.data.lang.dat</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\web.data.shared.dat">
-      <Link>Resources\web.data.shared.dat</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\data\Providers.ProtobufDataProvider\web.definitions.dat">
-      <Link>Resources\web.definitions.dat</Link>
-    </EmbeddedResource>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Choose>

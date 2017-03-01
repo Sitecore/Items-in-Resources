@@ -44,13 +44,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Data\ProtobufDataProvider\DataAccess\ChildrenDataSet.cs" />
-    <Compile Include="Data\ProtobufDataProvider\DataAccess\DataSet.cs" />
-    <Compile Include="Data\ProtobufDataProvider\DataAccess\DefinitionsDataSet.cs" />
-    <Compile Include="Data\ProtobufDataProvider\DataAccess\LanguageDataSet.cs" />
-    <Compile Include="Data\ProtobufDataProvider\DataAccess\SharedDataSet.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\DataSet.cs" />
     <Compile Include="Data\ProtobufDataProvider\DataFormat\FieldsData.cs" />
     <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemLanguagesData.cs" />
-    <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemsDefinitions.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemsData.cs" />
+    <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemDefinitions.cs" />
     <Compile Include="Data\ProtobufDataProvider\DataFormat\ItemsLanguagesData.cs" />
     <Compile Include="Data\ProtobufDataProvider\DataFormat\SharedData.cs" />
     <Compile Include="Data\ProtobufDataProvider\DataFormat\VersionsData.cs" />
