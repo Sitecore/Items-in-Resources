@@ -208,17 +208,16 @@
       var languageList = DataSet.Children.TryGetValue(ItemIDs.LanguagesRootId);
       if (languageList == null)
       {
-        return new Language[0];
+        yield break;
       }
 
-      var languages = languageList?
-        .Select(x => x?.Name)
-        .Where(x => !string.IsNullOrEmpty(x))
-        .Select(x => Language.Parse(x));
+      foreach (var item in languageList)
+      {                   
+        var lang = Language.Parse(item.Name);
+        lang.Origin.ItemId = new ID(item.ID);
 
-      Assert.IsNotNull(languages, nameof(languages));
-
-      return languages;
+        yield return lang;
+      }                                      
     }
 
     public override long GetDictionaryEntryCount()
