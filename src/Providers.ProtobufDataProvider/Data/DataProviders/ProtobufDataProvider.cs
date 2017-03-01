@@ -11,11 +11,12 @@
   using Sitecore.Diagnostics;
   using Sitecore.Exceptions;
   using Sitecore.Extensions.Dictionary;
+  using Sitecore.Extensions.Enumerable;
   using Sitecore.Globalization;
 
   public class ProtobufDataProvider : ReadOnlyDataProvider
   {
-    private static readonly Regex DescendantsQueryRegex = new Regex(@"^fast\://\*\[([^\]]+)\]$", RegexOptions.Compiled);
+    private static readonly Regex DescendantsQueryRegex = new Regex(@"//\*\[([^\]]+)\]$", RegexOptions.Compiled);
 
     private ItemsDataSet DataSet { get; }
 
@@ -163,28 +164,43 @@
             var value = arr.Last().Trim(" '\"".ToCharArray());
             switch (keyword)
             {
+              case "@@id":
+                var id = Guid.Parse(value);
+                items = items.Where(x => x.ID == id);
+                break;
+
               case "@@templateid":
                 var templateId = Guid.Parse(value);
                 items = items.Where(x => x.TemplateID == templateId);
                 break;
 
+              case "@@parentid":
+                var parentId = Guid.Parse(value);
+                items = items.Where(x => x.ParentID == parentId);
+                break;
+
               case "@@name":
+              case "@@key":
                 var name = value;
                 items = items.Where(x => x.Name.Equals(name, StringComparison.OrdinalIgnoreCase));
                 break;
 
               default:
-                throw new NotImplementedException();
+                throw new NotImplementedException($"The {keyword} query attribute support is not implemented yet: {query}");
             }
           }
         }
 
         ids = items.Take(100).Select(x => x.ID);
+#if DEBUG
+        Log.Info($"SelectID: {query}, Values: {string.Join(", ", ids ?? new Guid[0])}", this);
+#endif
+      }
+      else
+      {
+        Log.Error($"Failed to interpret query: {query}", this);
       }
 
-#if DEBUG
-      Log.Info($"SelectID: {query}, Values: {string.Join(", ", ids ?? new Guid[0])}", this);
-#endif
 
       return ids;
     }
