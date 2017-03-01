@@ -26,11 +26,11 @@
       {
         languages = languages.Concat(headLanguages);
       }
-      
-      languages = languages      
-        .GroupBy(x => x.Name).Select(x => x.First()); // .Distinct()
-        
 
+      languages = languages
+        .GroupBy(x => x.Name).Select(x => x.First()) // .Distinct()
+        .OrderByDescending(x => x.Name == "en"); // en must go first
+                          
 #if DEBUG
       this.Trace(languages, timer, context);
 #endif
