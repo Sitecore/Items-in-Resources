@@ -1,7 +1,5 @@
 # Items-in-Resources
 
-## Alpha-1.1
-
 This project aims to extend Sitecore implementation of data provider to make it support storing different 
 parts of content tree in separate locations such as SQL Server database and read-only binary files.
 
